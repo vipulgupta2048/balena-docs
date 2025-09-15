@@ -1,0 +1,175 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "aspen",
+  "name": "balena",
+  "colors": {
+    "primary": "#018AD7",
+    "light": "#018AD7",
+    "dark": "#018AD7"
+  },
+  "favicon": "/favicon.svg",
+  "appearance": {
+    "default": "light"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Source Sans Pro",
+      "format": "woff2",
+      "source": "https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwlxdu.woff2"
+    },
+    "body": {
+      "family": "Source Sans Pro",
+      "format": "woff2",
+      "source": "https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qOK7l.woff2"
+    }
+  },
+  "background": { "decoration": "gradient" , "color": {"light": "#f8f9fd"}},
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Learn",
+        "groups": [
+          {
+            "group": "WELCOME",
+            "icon": "hand-wave",
+            "pages": [
+              "learn/welcome/introduction",
+              "learn/welcome/primer",
+              "learn/welcome/production-plan",
+              "learn/welcome/security",
+              "learn/accounts/support-access"
+            ]
+          },
+          {
+            "group": "GETTING STARTED",
+            "icon": "rocket-launch",
+            "pages": ["learn/getting-started/raspberrypi5/nodejs"]
+          },
+          {
+            "group": "DEVELOP",
+            "icon": "microchip",
+            "pages": ["learn/develop/local-mode"]
+          },
+          {
+            "group": "DEPLOY",
+            "icon": "code-merge",
+            "pages": [
+              "learn/deploy/deployment",
+              "learn/deploy/release-strategy/release-policy"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "FAQ",
+        "groups": [
+          {
+            "group": "FAQS",
+            "icon": "circle-question",
+            "pages": ["faq/questions"]
+          },
+          {
+            "group": "Troubleshooting",
+            "icon": "screwdriver-wrench",
+            "pages": ["faq/troubleshooting/raspberrypi5"]
+          },
+          {
+            "group": "Accessing a Device using a Gateway Device",
+            "icon": "router",
+            "pages": ["faq/debugging-device-gateway"]
+          },
+          {
+            "group": "Storage Media Debugging",
+            "icon": "sd-card",
+            "pages": ["faq/debugging-storage-media"]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
+          {
+            "group": "Supported devices",
+            "icon": "star",
+            "pages": [
+              "reference/hardware/versioning",
+              "reference/hardware/wifi-dongles"
+            ]
+          },
+          {
+            "group": "Host OS",
+            "icon": "wifi",
+            "pages": [
+              "reference/OS/updates/self-service",
+              "reference/OS/customer-board-support"
+            ]
+          },
+          {
+            "group": "Device supervisor",
+            "icon": "circle-user",
+            "pages": ["reference/supervisor/device-metrics"]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Status",
+          "href": "https://status.balena.io/",
+          "icon": "signal"
+        },
+        {
+          "anchor": "Contact Us",
+          "href": "https://www.balena.io/contact",
+          "icon": "headset"
+        },
+        {
+          "anchor": "Blog",
+          "href": "https://blog.balena.io",
+          "icon": "newspaper"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://www.balena.io"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Login",
+        "href": "https://dashboard.balena-cloud.com/login"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Sign Up",
+      "href": "https://dashboard.balena-cloud.com/signup"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/balena_io?lang=en",
+      "github": "https://github.com/balena-io",
+      "linkedin": "https://www.linkedin.com/company/balenaio",
+      "facebook": "https://www.facebook.com/balenacloud",
+      "instagram": "https://www.instagram.com/balena_io",
+      "youtube": "https://www.youtube.com/balenaio"
+    }
+  }
+}

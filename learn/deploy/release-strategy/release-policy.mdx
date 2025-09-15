@@ -1,0 +1,55 @@
+---
+title: "Release policy "
+description: "When managing a fleet, you may require devices to be running different releases. By default, fleets follow a rolling release policy where new releases are deployed to all devices in the fleet once successfully built. However, you can customize this behavior, so the fleet or individual devices remain on a fixed release, by utilizing release pinning."
+sidebarTitle: "Release Strategy"
+---
+
+
+You may define the fleet and device release policies via the [balenaCloud dashboard](https://dashboard.balena-cloud.com/) or programmatically through the [API](https://docs.balena.io/reference/api/overview/), [SDKs](https://docs.balena.io/reference/sdk/node-sdk/), or [CLI](https://docs.balena.io/reference/balena-cli/).
+
+## Pin fleet to a release
+
+By default, the setting is set to `track latest`, which means that new releases are immediately deployed to all devices in the fleet when built. When the fleet is pinned, all devices that are not currently pinned to a release are updated to run the pinned release, and in the future, releases will not be deployed until the pinned release is updated to a different release or set to `track latest`.
+
+You can set the release the fleet is pinned to via the Releases card on the on the Fleet Summary page.
+<Frame>
+[![Pin fleet to release from Releases card](https://docs.balena.io/img/common/release-policy/releases_card_dropdown.webp)](https://docs.balena.io/img/common/release-policy/releases_card_dropdown.webp)
+</Frame>
+This can also be achieved using the `Pin to release` setting on the Fleet settings page.
+<Frame>
+[![Pin fleet to release setting](https://docs.balena.io/img/common/release-policy/pin_to_release_setting.webp)](https://docs.balena.io/img/common/release-policy/pin_to_release_setting.webp)
+</Frame>
+The dropdown menu at each of the above locations displays all successful and valid releases for the fleet.
+
+You can also pin a fleet to a release via the CLI as follows:
+
+- Pin to a specific release: `balena fleet pin <FLEET_SLUG> <RELEASE_COMMIT>`
+- Track latest: `balena fleet track-latest <FLEET_SLUG>`
+
+## Pin device to a release
+
+By default, all devices track the fleet release. However, you may wish to run a different release on select devices, for example, a development device or when performing a [canary deployment](https://docs.balena.io/learn/welcome/production-plan/#canary-deployments).
+
+There are several ways to achieve this from the Device dashboard. The dropdown options are identical to the ones when trying to pin the fleet to a release:
+
+- On the Devices page, you can select one or more devices using the checkboxes present on the table. Next, open the `Modify` menu and select the `Pin to release` option.
+<Frame>[![](https://docs.balena.io/img/common/release-policy/devices_table_modify.webp)](https://docs.balena.io/img/common/release-policy/devices_table_modify.webp)</Frame>
+- Alternatively, on hovering over the `Target release` property in the Device summary page, you will see a pencil icon appear. This can be used to pin the release as well.
+<Frame>[![](https://docs.balena.io/img/common/release-policy/device_target_release_pencil.webp)](https://docs.balena.io/img/common/release-policy/device_target_release_pencil.webp)</Frame>
+- Lastly, the Settings page of a device also has the option to pin the release.
+<Frame>[![](https://docs.balena.io/img/common/release-policy/device_settings.webp)](https://docs.balena.io/img/common/release-policy/device_settings.webp)</Frame>
+
+Once the device has been pinned to a release and updated, its `Target release` column updates to the pinned release. It will show a pin, rather than just showing the release targetted by the fleet. The `Release policy` column also updates to say `Pinned`.
+<Frame>
+[![Device release policy](https://docs.balena.io/img/common/release-policy/target_release_pin.webp)](https://docs.balena.io/img/common/release-policy/target_release_pin.webp)
+</Frame>
+You can also pin a device to a release via the CLI as follows:
+
+- Pin to a specific release: `balena device pin <DEVICE_UUID> <RELEASE_COMMIT>`
+- Track latest: `balena device track-fleet <DEVICE_UUID>`
+
+<Note>
+**Note:**
+
+For more details about using the API to manage the release policy see the [Fleet Management Masterclass](https://docs.balena.io/learn/more/masterclasses/fleet-management/#6-release-policy).
+</Note>
