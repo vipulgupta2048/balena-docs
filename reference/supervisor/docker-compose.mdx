@@ -1,0 +1,44 @@
+---
+title: "docker-compose.yml Fields"
+description: "Fields supported by balena in docker-compose.yml"
+sidebarTitle: "Compose Fields"
+---
+
+# docker-compose.yml fields
+
+Our compose-file support is currently based on version 2.4 (https://docs.docker.com/compose/compose-file/compose-versioning/#version-24), so any fields introduced in version 3 are not supported.
+
+## Supported fields
+
+Field | Details
+--- | ---
+[build](https://docs.docker.com/compose/compose-file/compose-file-v2/#build) | when using a path it must point to project/app subfolders. URLs to git repositories are not currently supported.
+[build.context](https://docs.docker.com/compose/compose-file/compose-file-v2/#context) | must point to project/app subfolders. URLs to git repositories are not currently supported.
+[build.dockerfile](https://docs.docker.com/compose/compose-file/compose-file-v2/#dockerfile) | 
+[build.args](https://docs.docker.com/compose/compose-file/compose-file-v2/#args) | 
+[build.cache_from](https://docs.docker.com/compose/compose-file/compose-file-v2/#cache_from) | 
+[build.extra_hosts](https://docs.docker.com/compose/compose-file/compose-file-v2/#extra_hosts) | 
+[build.labels](https://docs.docker.com/compose/compose-file/compose-file-v2/#labels) | 
+[build.shm_size](https://docs.docker.com/compose/compose-file/compose-file-v2/#shm_size) | 
+[build.target](https://docs.docker.com/compose/compose-file/compose-file-v2/#target) | currently incompatible with Livepush (/learn/develop/local-mode/#livepush)
+[cap_add](https://docs.docker.com/compose/compose-file/compose-file-v2/#cap_add-cap_drop) | 
+[cap_drop](https://docs.docker.com/compose/compose-file/compose-file-v2/#cap_add-cap_drop) | 
+...existing code...
+
+## Known unsupported fields
+
+Field | Details
+--- | ---
+[build.isolation](https://docs.docker.com/compose/compose-file/compose-file-v2/#isolation) | 
+[build.network](https://docs.docker.com/compose/compose-file/compose-file-v2/#network) | 
+...existing code...
+
+## Known unsupported features
+Feature | Details
+--- | ---
+[variable substitution](https://docs.docker.com/compose/compose-file/compose-file-v2/#variable-substitution) | 
+
+## Labels
+
+<Snippet id="general/labels-version-note" />
+<Snippet id="general/labels" />

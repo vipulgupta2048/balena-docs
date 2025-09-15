@@ -1,0 +1,24 @@
+---
+title: "What is balenaOS?"
+description: "An embedded Linux OS optimized for container workloads, with reliability and developer-friendly workflows."
+sidebarTitle: "What is balenaOS?"
+---
+
+## What is balenaOS?
+
+### Introduction
+
+balenaOS is an operating system optimized for running [Docker](https://www.docker.com/) containers on embedded devices, with an emphasis on reliability and developer workflows learned from years of balenaCloud deployments.
+
+The core insight behind balenaOS is that Linux containers offer a practical path to OS-level virtualization on embedded devices—bringing efficient isolation without the overhead of full VMs.
+
+balenaOS v2 represents decades of embedded experience, now fully open source and extensible for broader device support and modern security best practices.
+
+### Development vs Production mode
+
+balenaOS offers **development** and **production** images.
+
+- **Development mode** unlocks: passwordless SSH (port 22222), exposed Docker socket (port 2375), getty on serial, and **local mode** for rapid iterations. _Do not use in production._
+- **Production mode** locks down SSH and Docker, enabling remote access only via Cloudlink (`balena ssh`) or the web terminal. SSH keys must be configured.
+
+...additional content to be migrated...

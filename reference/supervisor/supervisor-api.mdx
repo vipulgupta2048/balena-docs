@@ -1,0 +1,70 @@
+---
+title: "Supervisor HTTP API"
+description: "Reference for the Supervisor's HTTP endpoints and usage"
+sidebarTitle: "Supervisor API"
+---
+
+# Interacting with the balena Supervisor
+
+The balena Supervisor is balena's agent that runs on devices. Its main role is to ensure your app is running and maintain communications with the balenaCloud API server.
+
+## HTTP API reference
+
+**Note:** on devices with supervisor version lower than 7.22.0, replace all `BALENA_` variables with `RESIN_`, for example `RESIN_SUPERVISOR_ADDRESS` instead of `BALENA_SUPERVISOR_ADDRESS`.
+
+The Supervisor exposes an HTTP API on port `48484` (`BALENA_SUPERVISOR_PORT`). To enable these environment variables, each service must include the label `io.balena.features.supervisor-api`.
+
+> **Note:** All endpoints (except `/ping`) require the `apikey` query parameter, available as `BALENA_SUPERVISOR_API_KEY`.
+
+Use `BALENA_SUPERVISOR_ADDRESS` (e.g., `http://127.0.0.1:48484`) as the base URL. For remote calls, use the balenaCloud proxy at:
+
+```
+POST https://api.balena-cloud.com/supervisor/<endpoint>
+```
+
+with JSON payload including `uuid`, `appId`, or `deviceId`, and an optional `method` field (default POST).
+
+---
+
+### GET /ping
+
+Responds with "OK", indicating the Supervisor is alive.
+
+```bash
+curl -X GET "$BALENA_SUPERVISOR_ADDRESS/ping"
+```
+
+### POST /v1/blink
+
+Triggers the onboard LED to blink for 15 seconds.
+
+```bash
+curl -X POST "$BALENA_SUPERVISOR_ADDRESS/v1/blink?apikey=$BALENA_SUPERVISOR_API_KEY"
+```
+
+### POST /v1/update
+
+Requests a state apply; use `?force=true` to override locks or `?cancel=true` to abort current apply.
+
+```bash
+curl -X POST "$BALENA_SUPERVISOR_ADDRESS/v1/update?apikey=$BALENA_SUPERVISOR_API_KEY" \
+  --data '{"force":true}'
+```
+
+### POST /v1/reboot
+
+Reboots the device (honors update locks unless `force=true`).
+
+```bash
+curl -X POST "$BALENA_SUPERVISOR_ADDRESS/v1/reboot?apikey=$BALENA_SUPERVISOR_API_KEY"
+```
+
+### POST /v1/shutdown
+
+Safely shuts down the device.
+
+```bash
+curl -X POST "$BALENA_SUPERVISOR_ADDRESS/v1/shutdown?apikey=$BALENA_SUPERVISOR_API_KEY"
+```
+
+{/* For full details, see the legacy MD file. */}

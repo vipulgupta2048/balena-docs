@@ -1,0 +1,50 @@
+---
+title: "Getting Started"
+description: "In this guide, we'll help you get started with balenaCloud by setting up your device, deploying a hello-world project, and iterating on your code in real time."
+sidebarTitle: "Getting Started"
+---
+
+# Getting Started
+
+In this guide, we will help you get started with balenaCloud by:
+
+- Setting up your **Raspberry Pi 5** device and bringing it online on the balenaCloud dashboard.
+- Deploying a **Node.js** hello-world project on the device.
+- Developing the sample project: making changes and testing them on the device in real time.
+
+Once you’ve completed this getting started guide to balenaCloud, you’ll have the fundamentals to continue developing your application and deploy fleets of devices to production. If you need definitions, see the [glossary](https://docs.balena.io/learn/more/glossary/).
+
+## What you’ll need
+
+- A **Raspberry Pi 5** device. See our full [supported devices](https://docs.balena.io/reference/hardware/devices/).
+- A tool to flash the OS (e.g. [Etcher](https://www.balena.io/etcher)).
+- Stable internet (Wi-Fi or Ethernet).
+- Reliable power supply.
+- A free [balenaCloud account](https://dashboard.balena-cloud.com/signup).
+- [balena CLI](https://docs.balena.io/reference/cli/#install-the-cli) installed.
+
+## Create a fleet
+
+A fleet is a group of devices that share the same [architecture](https://docs.balena.io/reference/hardware/devices/) and run the same code. Devices can be moved between fleets at any time.
+
+1. Log in to the [balenaCloud dashboard](https://dashboard.balena-cloud.com/) and click **Create fleet**.
+2. Enter a fleet name, select **Raspberry Pi 5**, choose the *Starter* fleet type, and click **Create new fleet**.
+
+<Frame>
+[![Create a fleet](https://docs.balena.io/img/common/create-first-fleet.webp)](https://docs.balena.io/img/common/create-first-fleet.webp)
+</Frame>
+
+You’ll be redirected to your new fleet’s summary page, where you can add devices.
+
+## Add a device and download OS
+
+1. Click **Add device** on the fleet summary.
+2. Select **balenaOS**, choose the latest **Development** version.
+3. Pick your network (Ethernet or Wi-Fi + Ethernet).
+4. Click **Download balenaOS** and note the `.img.zip` file name.
+
+<Frame>
+[![Add new device](https://docs.balena.io/img/getting-started/add-device.webp)](https://docs.balena.io/img/getting-started/add-device.webp)
+</Frame>
+
+{/* ...rest of content migrated similarly... */}

@@ -1,0 +1,37 @@
+---
+title: "Configuring balenaOS"
+description: "Instructions for editing and customizing config.json to modify balenaOS behavior"
+sidebarTitle: "Configuration"
+---
+
+## About config.json
+
+A balenaOS image starts unconfigured. When downloaded via the Dashboard, balenaCloud injects fleet-specific settings into `config.json` in the boot partition (`/mnt/boot/config.json`).
+
+> _Note:_ Do _not_ edit `/resin-boot/config.json` on-device—it is the read-only root FS. Always edit the mounted boot partition at `/mnt/boot/config.json`.
+
+```shell
+# on device
+cat /mnt/boot/config.json | jq '.'
+```
+
+Key fields include:
+
+- `deviceApiKey`, `userId`, `applicationId`, `uuid` – authentication and mapping
+- `developmentMode` (true/false)
+- `persistentLogging` (true/false)
+- `hostname`
+- `country`, `ntpServers`, `dnsServers`
+
+## Editing config.json
+
+Before provisioning, mount the SD card and update `config.json` directly. After provisioning, use the Dashboard _Configuration_ tab or Supervisor API to update fields safely.
+
+```shell
+# Example: change hostname
+tmp=$(mktemp)
+jq '.hostname="debug-device"' /mnt/boot/config.json > "$tmp" && mv "$tmp" /mnt/boot/config.json
+reboot
+```
+
+{/* ...remaining advanced settings, valid fields list, sample full config.json ... */}

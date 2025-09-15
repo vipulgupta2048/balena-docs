@@ -1,0 +1,26 @@
+---
+title: "Reduce Bandwidth Usage"
+description: "Configuration options to minimize network data usage for Supervisor features, ideal for metered connections."
+sidebarTitle: "Bandwidth Usage"
+---
+
+# Reduce Bandwidth Usage
+
+The Supervisor offers features like logs, metrics, and Cloudlink that consume data. On cellular links, you can reduce bandwidth by toggling these settings:
+
+| Feature / Variable                        | Enabled Data/Month | Notes                    |
+|-------------------------------------------|--------------------|--------------------------|
+| Cloudlink (`VPN_CONTROL`)                 | 80 MB              | Maintains VPN connection |
+| Device Metrics (`HARDWARE_METRICS`)       | 72 MB              | Minimal activity         |
+| API Poll Interval (`POLL_INTERVAL`)       | 28 MB (4×/hr)<br />1 MB (1×/day) | Default 4×/hr, min 1×/day |
+| NetworkManager connectivity check         | 8 MB (1×/hr)       | Uses routing metrics     |
+| Device Logging (`LOG_CONTROL`)            | 8 MB               | Depends on log volume    |
+| Cloudlink connectivity check              | N/A                | Only on errors           |
+
+Configure these from the Dashboard **Configuration** tab or via environment variables. See [Supervisor Configuration List](/reference/supervisor/configuration-list) for details.
+
+## Side Effects / Warnings
+- **Cloudlink:** turning off disables remote notifications and delays config/app updates until next API poll.
+- **Device Metrics:** hides metrics panel when off.
+- **API Poll Interval:** higher interval increases latency for new releases or config.
+- **Logging:** turning off stops forwarding logs to dashboard.

@@ -1,0 +1,33 @@
+---
+title: "Self-service Updates"
+description: "How to trigger balenaOS host OS updates from the dashboard, per-device or bulk."
+sidebarTitle: "Self-service Updates"
+---
+
+# Self-service Updates
+
+## Supported Versions
+
+balenaOS supports in-dashboard updates between 2.x versions (delta-based) and from 1.x → 2.x (full update). Development and production images are both supported.
+
+> _Note:_ 1.x → 2.x updates limit `/data` size to ~170 MB compressed; larger data causes failure.
+
+## Updating via Dashboard
+
+1. On a device page, open **Settings** → **OS Version**, select new version and **Save**.
+
+<Frame>
+[![Update device](/img/common/updates/update-os.webp)](/img/common/updates/update-os.webp)
+</Frame>
+
+2. Bulk update: select devices on the fleet page, **Modify → OS Version**, choose version and **Apply**.
+
+<Frame>
+[![Bulk update](/img/common/updates/group-update.webp)](/img/common/updates/group-update.webp)
+</Frame>
+
+> _Note:_ Supervisor updates can be triggered independently via **Settings → Supervisor**.
+
+Update progress is shown on the device page; long steps (image download) may appear paused. Check logs in `/mnt/data/balenahup/` if failures occur.
+
+{/* ...remaining troubleshooting tips... */}

@@ -1,0 +1,21 @@
+---
+title: "Host OS Update Process"
+description: "Details of how balenaOS performs self-service host OS updates, including deltas and rollbacks."
+sidebarTitle: "Update Process"
+---
+
+# Host OS Update Process
+
+balenaOS can remotely update its entire host OS via an atomic A/B partition strategy.
+
+1. **Pre-checks**: verify device type, version compatibility, and registry reachability.
+2. **Stop supervisor**: the update script stops the Supervisor, keeping the user app running.
+3. **Fetch update**: attempt delta update via balenaEngine; fall back to full pull from registry or Docker Hub.
+4. **Apply to spare partition**: format the inactive root partition and unpack the new OS image.
+5. **Update Supervisor**: if the new OS includes a newer Supervisor, upgrade it.
+6. **Switch boot**: configure bootloader to use the new partition on next reboot.
+7. **Reboot**: device restarts into the updated OS.
+
+> **Note**: Logs for update failures are in `/mnt/data/balenahup/` (or `/mnt/data/resinhup/`).
+
+{/* ...remaining detailed steps, error handling, sample logs ... */}

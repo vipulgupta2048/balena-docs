@@ -1,0 +1,29 @@
+---
+title: "Rollback Mechanisms"
+description: "balenaOS A/B update rollback-health and rollback-altboot frameworks"
+sidebarTitle: "Rollbacks"
+---
+
+# Rollback Mechanisms
+
+balenaOS supports two rollback strategies during host OS updates:
+
+## rollback-health
+
+Used when the new OS boots but key services fail health checks:
+
+- A flag `rollback-health-breadcrumb` is set in the state partition.
+- On reboot, `rollback-health.service` runs tests (engine health, VPN connectivity) every minute for 15 minutes (`ROLLBACK_HEALTH_TIMEOUT`).
+- If healthy, the flag is cleared. If unhealthy, previous boot files are restored, `rollback-health-triggered` set, and rebooted.
+
+## rollback-altboot
+
+Handles boot failures before userspace:
+
+- The bootloader increments `bootcount` if `upgrade_available=1` in `resinOS_uEnv.txt`.
+- If `bootcount > 1`, bootloader switches to previous root partition.
+- A flag `rollback-altboot-breadcrumb` is left in state. On boot, `rollback-altboot.service` copies boot files from the active root’s `resin-boot` into the boot partition and reboots.
+- If it fails, `rollback-health` will clear state and retry after timeout.
+
+{/* ...configuration samples, diagnostics logs ... */}
+<Snippet id="rollback-details" />

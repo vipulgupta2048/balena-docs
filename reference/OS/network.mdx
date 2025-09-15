@@ -1,0 +1,66 @@
+---
+title: "Networking on balenaOS"
+description: "Guide to Wi-Fi, Ethernet, VPN, and advanced networking on balenaOS"
+sidebarTitle: "Networking"
+---
+
+## Introduction
+
+balenaOS uses **NetworkManager** (with **ModemManager**) for flexible connectivity—ethernet, Wi-Fi, and cellular.
+
+Configure connections via files in the boot partition under `/system-connections`.
+
+## Wi-Fi Setup
+
+If you added Wi-Fi when flashing, you’ll find a `resin-wifi` file:
+
+```ini
+[connection]
+id=balena-wifi
+type=wifi
+
+[wifi]
+ssid=MySSID
+mode=infrastructure
+
+[wifi-security]
+key-mgmt=wpa-psk
+psk=MyPassword
+
+[ipv4]
+method=auto
+
+[ipv6]
+method=auto
+```
+
+Copy and customize for additional networks. Use `autoconnect-priority` to prefer one over another.
+
+## Ethernet Setup
+
+Ethernet works out of the box. To customize (e.g. shared mode):
+
+```ini
+[connection]
+id=shared-ethernet
+type=ethernet
+interface-name=eth0
+
+[ipv4]
+method=shared
+
+[ipv6]
+method=shared
+```
+
+## Setting a Static IP
+
+Add to your `[ipv4]` section:
+
+```ini
+address1=192.168.1.100/24,192.168.1.1
+dns=8.8.8.8;8.8.4.4;
+method=manual
+```
+
+{/* ...additional advanced topics (proxy, hotspot, diagnostics) to be migrated... */}
