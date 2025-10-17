@@ -19,6 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: false
 
       - uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
@@ -26,8 +27,11 @@ jobs:
           node-version: 22
           cache: "npm"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Build docs
-        run: npm run build --if-present
+        run: npm run build
            
       - name: Configure Git
         run: |
@@ -48,4 +52,4 @@ jobs:
         run: |
           git add .
           git commit -m "Auto-commit: Update files [skip ci]"
-          git push origin master
+          git push
