@@ -1,12 +1,60 @@
 ---
-title: "Time Synchronization"
-description: "How balenaOS synchronizes system time using chrony and NTP servers."
+title: "Time management"
+description: "Understand how balenaOS keeps accurate time with chrony, configure NTP servers, and detect sync issues."
 sidebarTitle: "Time"
 ---
 
-## Time Synchronization
+# Time management
 
-balenaOS uses **chrony** for accurate timekeeping.
+balenaOS uses [`chronyd`](https://chrony.tuxfamily.org/) to keep system time in sync. Versions earlier than 2.13.1 relied on `systemd-timesyncd`, but all supported releases now ship chrony.
 
+Accurate time matters—TLS certificates, API signatures, and delta downloads can fail if the device clock drifts. Verify the current host time over SSH:
 
-{/* ...detailed chrony config, troubleshooting tips... */}
+```sh
+balena ssh <device-uuid>
+date
+```
+
+Host timestamps are always in UTC. To show local time inside your containers install `tzdata` and set `ENV TZ=<Region/City>` in the Dockerfile or add a `TZ` environment variable in the dashboard.
+
+## chrony basics
+
+Chrony reads `/etc/chrony.conf` for configuration. The default file polls balena pool servers (`0–3.resinio.pool.ntp.org`) every ~4.5 hours, with a burst of quick polls on first boot. Devices persist their clock drift in `/var/lib/chrony/drift` so the next restart starts closer to the correct time.
+
+Key commands (run from `balena ssh`):
+
+- `chronyc sources` – list NTP servers, reachability, and offsets.
+- `chronyc tracking` – view system clock skew and last sync.
+- `chronyc ntpdata` – detailed stats for each source.
+
+If you prefer custom pools, set the `ntpServers` field in `config.json` (space-separated list). DHCP-provided NTP servers override the defaults starting with balenaOS 2.30.0.
+
+```json
+"ntpServers": "0.resinio.pool.ntp.org 1.resinio.pool.ntp.org"
+```
+
+## Detecting sync status
+
+Inside application containers, query the Supervisor API or use D-Bus to check whether the host clock synchronised at least once since boot. The `NTPSynchronized` property returns `true` when an initial NTP fix completes.
+
+## Legacy `systemd-timesyncd`
+
+Devices running balenaOS < 2.13.1 depended on `systemd-timesyncd`. On boot, the service compared the hardware clock against `/var/lib/systemd/clock` and forced monotonic time by never moving backwards. Once NTP succeeded it updated that file for the next reboot.
+
+## Network requirements
+
+- Allow outbound UDP/123 to the NTP pool. Because the pool rotates, whitelists must permit any upstream host.
+- Ensure DNS resolves the `*.resinio.pool.ntp.org` entries.
+- Connectivity issues appear as `Reach` values of `0` in `chronyc sources`.
+
+If outbound NTP is blocked, consider hosting an on-premise NTP pool and configuring it via `ntpServers` or DHCP.
+
+## Troubleshooting
+
+- Check `/var/log/journal/` for `chronyd` warnings about unreachable peers.
+- Missing `chronyc`? Install it temporarily with `balena ssh` and `HOSTOS_VERSION` package manager via [balena-support instructions](https://www.balena.io/docs/learn/manage/ssh-access/#host-os-ssh). Remember changes in the host shell are not persistent.
+- Median offsets above 1000 ms usually mean the device cannot contact any NTP server or the hardware clock is severely misconfigured.
+
+:::tip Keep time monotonic
+If you hand-edit the clock for testing, restart chronyd afterwards so it recalculates drift: `systemctl restart chronyd`.
+:::

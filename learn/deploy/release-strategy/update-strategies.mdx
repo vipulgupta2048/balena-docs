@@ -1,0 +1,63 @@
+---
+title: "Fleet update strategy"
+description: "Choose how the balena Supervisor stages, downloads, and swaps releases on your devices."
+sidebarTitle: "Update strategy"
+---
+
+## Pick the right strategy
+
+Supervisor v1.3 and later lets you control how updates are applied on each service by setting labels in `docker-compose.yml`. Combine the strategy that fits your resource constraints with update locks to keep your application available during critical phases.
+
+| Label | Purpose |
+| --- | --- |
+| `io.balena.update.strategy` | Selects the rollout mode. |
+| `io.balena.update.handover-timeout` | Sets the timeout (in milliseconds) for the `hand-over` strategy. |
+
+<Warning>
+Older deployments may still use the `RESIN_SUPERVISOR_UPDATE_STRATEGY` and `RESIN_SUPERVISOR_HANDOVER_TIMEOUT` configuration variables. They map to the same behaviour but are deprecated and may be removed in future Supervisor releases.
+</Warning>
+
+Update labels apply per-service, so you can mix strategies within a multicontainer fleet if necessary.
+
+## Strategy options
+
+### `download-then-kill` *(default)*
+
+- Downloads the new image while the old container keeps running.
+- Stops the old container once the download completes.
+- Starts the new container and removes the old image.
+
+Use this when devices have enough RAM and storage to hold both images temporarily and short downtime is acceptable.
+
+### `kill-then-download`
+
+- Stops the old container before pulling the new image.
+- Downloads the update with minimal RAM usage.
+- Starts the new container and cleans up the old image.
+
+Best for resource-constrained devices where memory pressure is a bigger concern than downtime.
+
+### `delete-then-download`
+
+- Stops the old container and deletes the image immediately.
+- Downloads the new image from scratch.
+- Starts the updated container.
+
+<Info>
+Requires Supervisor 7.23.0 or later and is recommended only for extremely low-storage scenarios. Enable [delta updates](https://docs.balena.io/learn/deploy/delta/) wherever possible before choosing this mode.
+</Info>
+
+Because the old layers are removed first, expect longer downtime and higher bandwidth usage.
+
+### `hand-over`
+
+- Downloads the new image without stopping the old container.
+- Starts the new container alongside the old one.
+- Your service coordinates the transition and signals completion by creating `/data/resin-kill-me`.
+- If the handover signal never appears, the Supervisor waits for `io.balena.update.handover-timeout` (default 60 seconds) before killing the old container.
+
+This mode enables near-zero downtime updates when both versions can run briefly in parallel. Design co-operating services—for example, share `/data` or an IPC channel—to hand off resources cleanly.
+
+<Note>
+Update strategies always respect [fleet update locks](https://docs.balena.io/learn/deploy/release-strategy/update-locking/), so you can pause rollouts programmatically no matter which mode you choose.
+</Note>

@@ -1,0 +1,204 @@
+---
+title: "Communicate outside the container"
+description: "Reach the host OS, Supervisor, network, and storage safely from inside balena containers."
+sidebarTitle: "Outside the container"
+thumbnail: "/img/common/device/running-webterminal-session.webp"
+---
+
+## Overview
+
+Applications often need to talk to the host OS, query device metadata, call the balena Supervisor, or mount additional storage. This guide gathers the most common patterns so you can integrate with the platform without compromising reliability.
+
+## Host OS integration
+
+### Environment variables
+
+The Supervisor injects a set of `BALENA_` environment variables into each service. They expose essential metadata and credentials:
+
+| Variable | Description |
+| --- | --- |
+| `BALENA_DEVICE_UUID` | Unique identifier for the device. |
+| `BALENA_APP_ID` | Numeric fleet ID. |
+| `BALENA_APP_NAME` | Human-readable fleet name. |
+| `BALENA_DEVICE_NAME_AT_INIT` | Device name assigned during provisioning. |
+| `BALENA_DEVICE_TYPE` | Device type slug (for example `raspberrypi3`). |
+| `BALENA` | Always set to `1`; use it to detect you are running on balenaOS. |
+| `BALENA_SUPERVISOR_API_KEY` | Scoped key for the Supervisor HTTP API. Requires the `io.balena.features.supervisor-api` label in multicontainer fleets. |
+| `BALENA_SUPERVISOR_ADDRESS` | Supervisor URL (`http://127.0.0.1:48484` by default). |
+| `BALENA_SUPERVISOR_HOST` | Host-only IP for the Supervisor (`127.0.0.1`). |
+| `BALENA_SUPERVISOR_PORT` | Supervisor API port (`48484`). |
+| `BALENA_API_KEY` | API key for the balenaCloud backend. Requires the `io.balena.features.balena-api` label in multicontainer fleets. |
+| `BALENA_HOST_OS_VERSION` | Version string of the host OS. |
+| `BALENA_DEVICE_RESTART` | Internal flag used by the Supervisor. |
+
+<Info>
+Legacy `RESIN_` variables are still injected for backwards compatibility. Prefer the `BALENA_` names in new projects.
+</Info>
+
+Inspect the variables directly from a device shell:
+
+```bash
+printenv | grep BALENA
+```
+
+### D-Bus access
+
+Some host interactions—such as rebooting or stopping systemd units—require D-Bus. Add the D-Bus label and environment variable in your compose file:
+
+```yaml
+services:
+  my-service:
+    labels:
+      io.balena.features.dbus: '1'
+    environment:
+      - DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
+```
+
+Then prepend the address when calling `dbus-send`:
+
+```bash
+DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket \
+  dbus-send --system --print-reply \
+  --dest=org.freedesktop.systemd1 \
+  /org/freedesktop/systemd1 \
+  org.freedesktop.systemd1.Manager.Reboot
+```
+
+Common operations:
+
+- **Stop a systemd unit**: call `Manager.StopUnit` with the unit name (for example `bluetooth.service`).
+- **Check NTP status**: query `org.freedesktop.timedate1` and read the `NTPSynchronized` property.
+
+<Warning>
+Avoid running an init system (systemd, OpenRC) inside the container when exporting `DBUS_SYSTEM_BUS_ADDRESS`. Doing so can cause the container’s init to control the host and disrupt connectivity.
+</Warning>
+
+Not every host setting is writable through D-Bus. For example, the hostname resides on a read-only partition; use the [Supervisor API](https://docs.balena.io/reference/supervisor/supervisor-api/#patch-v1devicehost-config) instead.
+
+### Kernel modules
+
+Blacklisting modules inside a container (`/etc/modprobe.d`) has no effect on the host. Remove modules explicitly with `rmmod` if you need to unload them.
+
+## Interacting with the Supervisor
+
+Grant access by adding `io.balena.features.supervisor-api: '1'` to the service labels.
+
+### Reboot the device
+
+```bash
+curl -X POST \
+  --header "Content-Type: application/json" \
+  "$BALENA_SUPERVISOR_ADDRESS/v1/reboot?apikey=$BALENA_SUPERVISOR_API_KEY"
+```
+
+The Supervisor API offers many more endpoints for release pinning, configuration, and device state. Review the [reference](https://docs.balena.io/reference/supervisor/supervisor-api/).
+
+Anything sent to `stdout` or `stderr` automatically surfaces in the balenaCloud dashboard logs.
+
+## Network options
+
+balenaEngine supports both host and bridge networking modes:
+
+- **Host**: the service shares the host’s network namespace. No port mappings required.
+- **Bridge**: services join a user-defined bridge network and must expose ports explicitly. This is the default for multicontainer fleets.
+
+Example bridge configuration:
+
+```yaml
+services:
+  proxy:
+    build: ./haproxy
+    ports:
+      - "80:80"
+
+  frontend:
+    build: ./frontend
+    expose:
+      - "80"
+
+  data:
+    build: ./data
+    expose:
+      - "8080"
+```
+
+<Note>
+`expose` documents which ports a service uses; it does not publish them to the host. Use `ports` for host ingress.
+</Note>
+
+Set `network_mode: host` for services that require full host networking (Bluetooth, Avahi, or custom discovery protocols). Compose also supports multiple bridge networks, `aliases`, and IPAM configuration when you need stricter segmentation.
+
+### Public device URLs
+
+balenaCloud can proxy HTTP traffic on port 80 to a device. Enable the public URL from the **Actions** menu in the dashboard to expose a web server running inside your service.
+
+```javascript
+import express from 'express';
+
+const app = express();
+
+app.get('/', (_req, res) => {
+  res.send('Hello World!');
+});
+
+app.listen(80, () => {
+  console.log('Serving on port 80');
+});
+```
+
+### DNS resolvers inside containers
+
+balenaOS runs `dnsmasq` on the host. If you run your own DNS resolver in a container, configure it to bind to an explicit interface (for example by setting `bind-interfaces` in `dnsmasq.conf`) so it does not collide with the host service.
+
+## Storage patterns
+
+### Persistent storage
+
+Use named volumes to persist data between releases. The [persistent storage guide](https://docs.balena.io/learn/develop/runtime/#persistent-storage) covers strategies and examples.
+
+### Temporary directories
+
+Container `/tmp` and `/var/tmp` directories live on the container’s writable layer. They survive reboots but are cleared when services restart. Mount them as `tmpfs` to back them with volatile memory:
+
+```yaml
+services:
+  myapp:
+    image: foo/bar
+    tmpfs:
+      - /tmp
+      - /var/tmp
+```
+
+### External storage media
+
+For removable media (SD cards, USB drives):
+
+1. Confirm the filesystem is supported on balenaOS (`cat /proc/filesystems`).
+2. Run the service as `privileged`, enable udev (`ENV UDEV=on`), and run as `root` so you can detect hot-plug events.
+3. Mount devices using `mount`:
+
+   ```bash
+   mount -t <fstype> -o rw -L <device-label> /mnt/external
+   ```
+
+4. Unmount with `umount /mnt/external` when finished.
+
+Automate mounting with udev rules:
+
+```text
+ACTION=="add", SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", RUN+="/bin/sh -c '/usr/src/scripts/mount.sh'"
+ACTION=="remove", SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", RUN+="/bin/sh -c '/usr/src/scripts/unmount.sh'"
+```
+
+Copy the rules to `/etc/udev/rules.d/usb.rules` and implement the helper scripts to call `mount` and `umount` accordingly. A complete example lives in [balena-storage](https://github.com/balena-io-playground/balena-storage).
+
+<Warning>
+Mounted devices cannot currently be shared across multiple containers. Plan your architecture so a single service owns the mount point.
+</Warning>
+
+## Additional resources
+
+- [Supervisor API reference](https://docs.balena.io/reference/supervisor/supervisor-api/)
+- [Host OS masterclass](https://docs.balena.io/learn/more/masterclasses/host-os-masterclass/)
+- [Services masterclass networking chapter](https://docs.balena.io/learn/more/masterclasses/services-masterclass/#4-networking-types)
+- [balena base images](https://docs.balena.io/reference/base-images/balena-base-images/)

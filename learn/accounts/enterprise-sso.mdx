@@ -1,0 +1,113 @@
+---
+title: "Enterprise Single Sign-On"
+description: "Integrate your SAML 2.0 identity provider with balenaCloud for enterprise SSO."
+sidebarTitle: "Enterprise SSO"
+---
+
+## Overview
+
+Enterprise Single Sign-On (SSO) lets organizations authenticate balenaCloud users through their existing SAML 2.0 identity provider (IdP). Users log in with corporate credentials while administrators keep centralized control over access and compliance.
+
+<Info>
+Enterprise SSO is available on paid plans (Prototype, Pilot, Production, or Enterprise). Contact [solutions@balena.io](mailto:solutions@balena.io) to enable it for your organization.
+</Info>
+
+Configuring SSO requires one-time setup in both balenaCloud and your IdP. This guide outlines the balenaCloud steps and links to IdP-specific instructions.
+
+## Link a SAML identity provider
+
+1. Sign in as an administrator of an eligible organization.
+2. Open the [Identity Provider dashboard](https://dashboard.balena-cloud.com/identity-provider).
+3. Click **Add identity provider** and either upload your IdP metadata XML or enter the values manually.
+
+![Add identity provider form](https://docs.balena.io/img/common/saml/add-idp-form-filled.webp)
+
+Choose a unique **SSO identifier**. This identifier appears in the login URL, e.g., `https://dashboard.balena-cloud.com/saml/acme`.
+
+<Note>
+Identifiers accept lowercase letters, numbers, hyphens, and underscores only. The value must be unique across balenaCloud.
+</Note>
+
+### Associate organizations and teams
+
+Select one or more organizations for automatic access when users authenticate. Only organizations on paid plans appear in the list.
+
+<Warning>
+Removing an organization later stops new logins from receiving access, but existing SSO users retain membership. Every IdP configuration must remain associated with at least one organization.
+</Warning>
+
+Optionally choose a default team for each organization. New SSO users join those teams automatically.
+
+<Note>
+Unlinking a default team prevents future auto-assignment but does not remove existing memberships.
+</Note>
+
+After saving, the IdP appears in the dashboard along with linked organizations and teams.
+
+![Configured IdP](https://docs.balena.io/img/common/saml/idp-with-two-orgs.webp)
+
+For provider-specific configuration steps, see:
+
+- [Microsoft Entra ID (Azure AD)](/learn/accounts/idp-setup/microsoft-entra-saml-setup/)
+- [Google Workspace SAML](/learn/accounts/idp-setup/google-workspace-saml-setup/)
+
+## Prepare users for SSO
+
+### Pair an existing balenaCloud account
+
+Users must start with a standard balenaCloud account that uses their company email address.
+
+1. Create an account at [dashboard.balena-cloud.com/signup](https://dashboard.balena-cloud.com/signup) if needed.
+2. Open [Preferences → Enterprise SSO](https://dashboard.balena-cloud.com/preferences/details) and click **Enable**.
+3. Enter the SSO identifier provided by your administrator.
+
+![Enable SSO modal](https://docs.balena.io/img/common/saml/add-sso-identifier-merge-modal.webp)
+
+<Warning>
+Enabling SSO converts a personal account into a company-managed account. This action cannot be undone. balenaCloud deletes existing API keys, prevents new personal API keys, transfers fleet and device ownership to the company, and allows administrators to revoke access at any time.
+</Warning>
+
+Users remain subject to balenaCloud's [Terms of Service](https://www.balena.io/terms-of-service) and [Master Service Agreement](https://www.balena.io/master-agreement). The company becomes the legal owner responsible for the account and associated data.
+
+### Log in with SSO
+
+After pairing, users sign in via the Enterprise SSO button or by visiting the direct SSO URL, e.g., `https://dashboard.balena-cloud.com/saml/acme`.
+
+![Enterprise SSO login](https://docs.balena.io/img/common/saml/login-page.webp)
+
+Once SSO is enabled, username/password logins are disabled for that account.
+
+## Manage SSO accounts and IdPs
+
+### Delete SSO accounts
+
+Need to delete an SSO account before removing the IdP? Use the balena Node.js SDK:
+
+```js
+await sdk.pine.delete({
+  resource: 'saml_account',
+  options: {
+    $filter: {
+      remote_id: '<user_email>'
+    }
+  }
+});
+```
+
+<Warning>
+Ensure at least one non-SSO administrator remains in every organization before deleting SSO users; otherwise you risk locking everyone out.
+</Warning>
+
+Removing the user from the IdP blocks future logins, but active balenaCloud sessions remain valid for up to 12 hours.
+
+### Delete an identity provider
+
+Before deleting an IdP, remove every associated SSO account from the linked organizations. Once no SSO accounts remain, delete the IdP from the Identity Provider dashboard.
+
+### Troubleshoot common issues
+
+- **IdP setup questions**: Follow our [Microsoft Entra ID](/learn/accounts/idp-setup/microsoft-entra-saml-setup/) or [Google Workspace](/learn/accounts/idp-setup/google-workspace-saml-setup/) examples and adapt to your IdP.
+- **Unsupported IdPs**: balenaCloud accepts any provider that speaks SAML 2.0, including Okta and others.
+- **Organization-wide enforcement**: Global enforcement is not yet available. Users must opt in individually.
+- **API key access**: SSO users cannot create personal API keys. Create a separate non-SSO service account if automation requires keys.
+- **2FA errors**: If enabling 2FA fails, sign out, sign back in via SSO, and retry immediately.

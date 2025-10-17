@@ -1,0 +1,131 @@
+---
+title: "Choose base images"
+description: "Select and maintain Docker base images for balenaCloud projects after the balenalib deprecation."
+sidebarTitle: "Base images"
+---
+
+## Overview
+
+balena stopped publishing new balenalib images in 2025. Existing images remain available, but new projects should rely on maintained community sources. This guide explains how to choose replacements, pin versions, and extend images for specialized workloads.
+
+<Info>
+Legacy balenalib documentation now lives at [docs.balena.io/reference/base-images/balena-base-images-reference](https://docs.balena.io/reference/base-images/balena-base-images-reference/).
+</Info>
+
+## Use Docker Official Images
+
+Docker Official Images are pre-built, vetted, and regularly updated. They include documentation, security fixes, and multi-architecture support—qualities that motivated the transition away from balenalib.
+
+Look for the **Official Image** badge on Docker Hub listings.
+
+![Docker Official Image](https://docs.balena.io/img/docker_official.png)
+
+### Start with a general-purpose distribution
+
+Pick a standard Linux distribution and install the packages you need. Example using the Debian official image:
+
+```dockerfile
+FROM debian:bookworm-20250407
+
+RUN apt update && apt install -y --no-install-recommends nano
+
+CMD ["sleep", "infinity"]
+```
+
+Popular OS images:
+
+- Debian: https://hub.docker.com/_/debian
+- Ubuntu: https://hub.docker.com/_/ubuntu/
+- Fedora: https://hub.docker.com/_/fedora
+- Alpine: https://hub.docker.com/_/alpine
+
+### Match device architectures
+
+Docker Hub and balena use different architecture names. Use this table to translate between them:
+
+| Docker architecture | balena architecture (`BALENA_ARCH`) | Alternative names | Example device types |
+| --- | --- | --- | --- |
+| `arm32v6` (ARMv6 32-bit) | `rpi` | `armv6`, `armhf` | Raspberry Pi 1 Model B+, Raspberry Pi Zero/W |
+| `arm32v7` (ARMv7 32-bit) | `armv7hf` | `armv7`, `armv7l`, `armhf` | BeagleBone Black, Raspberry Pi 2 |
+| `arm64v8` (ARMv8 64-bit) | `aarch64` | `arm64`, `armv8` | IOT-GATE-iMX8, Raspberry Pi 4, NVIDIA Jetson |
+| `amd64` (Linux x86-64) | `amd64` | `x86_64`, `x64` | Intel NUC, generic x86-64 devices, cloud VMs |
+| `i386` (x86/i686) | `i386` | `x86`, `i686`, `ia32` | Older 32-bit x86 devices |
+| `windows-amd64` | Not supported | `win-amd64`, `x86_64` (Windows) | — |
+
+For reference, see the [balena machine names and architectures page](https://docs.balena.io/reference/base-images/devicetypes/).
+
+## Pin tags with digests
+
+Tags like `ubuntu:22.04` track rolling updates. For reproducible builds, pin images by digest:
+
+```text
+FROM ubuntu@sha256:04c0fd7fceedf5c0fe69ec1685c37cf270f03ae424322a58548b095528f4a3c3
+```
+
+Find digests on Docker Hub under the tag's manifest list. Review newer releases periodically to pick up security fixes.
+
+## Consider distroless images for production
+
+Distroless images remove shells and package managers to reduce size and attack surface.
+
+<Warning>
+Distroless images do not include a shell, so the balenaCloud web terminal and CLI SSH access stop working. Use them only when you have alternative debugging workflows.
+</Warning>
+
+Learn more:
+
+- https://github.com/GoogleContainerTools/distroless
+- https://github.com/dotnet/dotnet-docker/blob/main/documentation/distroless.md
+- https://www.docker.com/blog/is-your-container-image-really-distroless/
+
+## Language runtime stacks
+
+Official language images provide pre-installed runtimes. Examples:
+
+- Python: https://hub.docker.com/_/python
+- Node.js: https://hub.docker.com/_/node
+- OpenJDK: https://hub.docker.com/_/openjdk
+- .NET: https://hub.docker.com/r/microsoft/dotnet-sdk
+- Rust: https://hub.docker.com/_/rust
+- Go: https://hub.docker.com/_/golang
+
+If an official stack does not offer the OS you need, install the language from the distribution's package manager or from upstream binaries. Adapt traditional installation instructions to Dockerfile commands, for example:
+
+```dockerfile
+FROM ubuntu:focal-20250404
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3 python3-dev
+
+CMD ["sleep", "infinity"]
+```
+
+## NVIDIA Jetson and L4T packages
+
+Jetson devices typically need NVIDIA's apt repositories. Add them to your Dockerfile so you can install CUDA, JetPack, and related packages:
+
+```dockerfile
+FROM ubuntu:22.04
+
+RUN echo "deb https://repo.download.nvidia.com/jetson/common r36.3 main" >> /etc/apt/sources.list.d/nvidia.list \
+  && echo "deb https://repo.download.nvidia.com/jetson/t234 r36.3 main" >> /etc/apt/sources.list.d/nvidia.list \
+  && apt-key adv --fetch-key http://repo.download.nvidia.com/jetson/jetson-ota-public.asc \
+  && mkdir -p /opt/nvidia/l4t-packages/ \
+  && touch /opt/nvidia/l4t-packages/.nv-l4t-disable-boot-fw-update-in-preinstall \
+  && apt-get update
+```
+
+For older Jetson platforms, adjust the repository URLs (for example, `r32.7` and `t186`). Additional resources:
+
+- https://blog.balena.io/how-to-use-nvidia-jetson-devices-on-balena/
+- https://github.com/balena-io-examples/jetson-examples
+
+## Running init systems in containers
+
+Prefer splitting functionality into multiple services instead of running an init system such as systemd inside a container. If you must run one, follow the examples in the [balena base-image repository](https://github.com/balena-io-library/base-images/tree/master/examples/INITSYSTEM/systemd/systemd.v230).
+
+Key tasks include installing systemd, masking host-only services, and providing an entry point script that launches your application.
+
+## Maintain existing balenalib images
+
+If you still depend on balenalib, clone the original Dockerfiles from the [balena base-image repository](https://github.com/balena-io-library/base-images/tree/master/balena-base-images). Update dependencies, apply security patches, and test on actual hardware before deploying to production. Use this approach to reduce risk while planning your migration to official images.

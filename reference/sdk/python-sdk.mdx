@@ -1,0 +1,74 @@
+# Python SDK
+
+Use the balena Python SDK when you want to script balenaCloud interactions, automate provisioning flows, or embed balena functionality inside backend services.
+
+## Installation
+
+Install from PyPI:
+
+```sh
+pip install balena-sdk
+```
+
+To test development branches or custom forks, clone the [balena-sdk-python repository](https://github.com/balena-io/balena-sdk-python) and install from source.
+
+## Getting started
+
+```python
+from balena import Balena
+
+balena = Balena()
+credentials = {"username": "alice@example.com", "password": "s3cret"}
+balena.auth.login(**credentials)
+```
+
+Provide a settings dictionary to target alternative environments or customise behaviour:
+
+```python
+balena = Balena({
+    "balena_host": "balena-cloud.com",
+    "api_version": "v7",
+    "data_directory": "/home/example/.balena",
+    "retry_rate_limited_request": True,
+})
+```
+
+For ephemeral scripts, set `data_directory` to `False` to avoid writing tokens to disk.
+
+## Working with staging environments
+
+Maintain independent sessions by configuring separate `data_directory` values:
+
+```python
+balena_prod = Balena()
+balena_staging = Balena({
+    "balena_host": "balena-staging.com",
+    "data_directory": "/tmp/.balena-staging",
+})
+```
+
+## Common workflows
+
+- **Fleets:** `balena.models.application.create(...)`, `get_all(...)`, and `track_latest_release(...)`
+- **Devices:** `balena.models.device.register(...)`, `get_supervisor_state(...)`, `start_os_update(...)`
+- **OS assets:** `balena.models.os.get_available_os_versions(...)` and `download(...)`
+- **Environment variables:** `balena.models.device.env_var.set(...)` and related helpers for services, builds, and applications
+- **Logs:** Stream with `balena.logs.subscribe(uuid, callback=...)`, then stop with `balena.logs.unsubscribe(uuid)`
+
+All model methods support the same PineJS-inspired options (`select`, `filter`, `expand`) available in the REST API.
+
+## Rate limiting and retries
+
+The SDK raises a `RateLimitError` on HTTP 429 responses by default. Enable automatic retries with:
+
+```python
+balena = Balena({"retry_rate_limited_request": True})
+```
+
+When enabled, the SDK respects the `Retry-After` header before replaying the request.
+
+## Further resources
+
+- Full reference for the latest release: [balena-sdk-python.readthedocs.io](https://balena-sdk-python.readthedocs.io/)
+- Examples and issue tracker: [balena-sdk-python on GitHub](https://github.com/balena-io/balena-sdk-python)
+- balena forums for usage questions: [forums.balena.io](https://forums.balena.io/c/product-support)

@@ -1,0 +1,38 @@
+---
+title: "Delta updates"
+description: "Use balenaCloud binary deltas to minimise download size, storage requirements, and update time."
+sidebarTitle: "Delta updates"
+---
+
+## How delta updates work
+
+When a new release is available, devices usually perform a standard Docker pull and fetch every missing layer of the image. That approach can move hundreds of megabytes, requires enough free space to store both images, and extends the time a device spends mid-update.
+
+Binary delta updates avoid those costs by only transmitting the changes between the old and new images. The balenaCloud builder compares the full contents of each image (not just the layers) and produces the smallest possible delta. The device downloads that delta, applies it in place, and immediately runs the updated service. In the worst case the download is as large as a full image, but most iterative changes are dramatically smaller.
+
+<Info>
+Delta updates are supported on balenaOS 2.47.1 and later. Run a [self-service OS update](https://docs.balena.io/reference/OS/updates/self-service/) to enable the feature on older devices.
+</Info>
+
+The end result: smaller transfers, less temporary storage, and quicker updates even on constrained networks.
+
+## Enable deltas for a fleet
+
+Delta updates are enabled automatically on supported balenaOS versions. Devices still follow your configured [update strategy](https://docs.balena.io/learn/deploy/release-strategy/update-strategies/) and honour the [Supervisors update locks](https://docs.balena.io/learn/deploy/release-strategy/update-locking/).
+
+If you manage an extended-support-release (ESR) device, verify the image ships with deltas enabled in the corresponding [OS release notes](https://docs.balena.io/reference/OS/extended-support-release/).
+
+## How deltas are generated
+
+Before a device can apply a delta, balenaCloud needs a diff between the release currently on the device and the target release. Deltas are created in two ways:
+
+1. **Build-time deltas** are generated automatically on the builder when you push a new release. They cover the previous successful release to the new one.
+2. **On-demand deltas** are generated when a device requests an update path that was not produced at build time—common when devices skip releases or when images are built outside the balena builders.
+
+On-demand deltas can take longer because the builder must calculate the diff. During this window the Supervisor keeps polling for readiness; once available, the delta downloads immediately. Expect the dashboard *Download progress* bar to complete much faster than a traditional pull.
+
+<Note>
+Even with deltas, devices must be able to store the updated image. For extremely low-storage deployments, review the [`delete-then-download` strategy](https://docs.balena.io/learn/deploy/release-strategy/update-strategies/#delete-then-download).
+</Note>
+
+Delta updates work hand in hand with update strategies and locks, so you retain full control over rollout timing while reducing the bandwidth required for each upgrade.

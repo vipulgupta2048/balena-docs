@@ -1,0 +1,61 @@
+---
+title: "SAML app for Google Workspace"
+description: "Create a custom Google Workspace SAML application for balenaCloud enterprise SSO."
+sidebarTitle: "Google Workspace"
+---
+
+## Overview
+
+This guide walks through building a Google Workspace SAML identity provider for balenaCloud. When finished, download the metadata file and [upload it to balenaCloud](/learn/accounts/enterprise-sso/#link-a-saml-identity-provider) to complete the connection.
+
+<Info>
+You need Google Workspace super-admin access to create SAML apps and assign them to users or groups.
+</Info>
+
+## Step 1: Open the Admin console
+
+Sign in to the [Google Admin console](https://admin.google.com/ac/apps/unified) with an administrator account.
+
+## Step 2: Add a custom SAML app
+
+1. Click **Add app**.
+2. Choose **Add custom SAML app**.
+
+## Step 3: Name the app and download metadata
+
+1. Enter a descriptive name such as `balenaCloud SSO`.
+2. Download the metadata file when prompted. You will upload this file to balenaCloud later.
+
+## Step 4: Configure service provider details
+
+1. Provide the Assertion Consumer Service (ACS) URL:
+
+```text
+https://api.balena-cloud.com/auth/saml/<sso-identifier>/callback
+```
+
+2. Provide the Entity ID:
+
+```text
+https://api.balena-cloud.com/auth/saml/<sso-identifier>
+```
+
+Replace `<sso-identifier>` with the identifier you plan to use in balenaCloud (for example, `acme`).
+
+## Step 5: Skip attribute mapping
+
+balenaCloud does not require additional attribute mappings, so you can leave this section unchanged.
+
+## Step 6: Enable the app for users
+
+Set the app **Service status** to **ON** for everyone or for the groups that should access balenaCloud. Only enabled users can sign in via SSO.
+
+## Step 7: Review the configuration
+
+Confirm the app appears in your list of custom SAML apps.
+
+![Custom Google Workspace SAML app](https://docs.balena.io/img/common/saml/google-workspace-saml-app-final.webp)
+
+## Finish the integration
+
+Upload the metadata file in balenaCloud by following the [Enterprise SSO instructions](/learn/accounts/enterprise-sso/#link-a-saml-identity-provider). Once linked, users in the enabled groups can sign in through Google Workspace SSO.

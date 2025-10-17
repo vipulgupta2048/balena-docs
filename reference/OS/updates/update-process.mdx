@@ -1,21 +1,54 @@
 ---
 title: "Host OS Update Process"
-description: "Details of how balenaOS performs self-service host OS updates, including deltas and rollbacks."
+description: "What happens when a balenaOS device performs a self-service host OS update, including deltas, partition switching, and rollbacks."
 sidebarTitle: "Update Process"
 ---
 
-# Host OS Update Process
+# Host OS update lifecycle
 
-balenaOS can remotely update its entire host OS via an atomic A/B partition strategy.
+Self-service host OS updates swap the inactive root filesystem partition with a new image while the running application continues executing. The process is designed to be atomic: if any step fails, the device keeps the existing OS.
 
-1. **Pre-checks**: verify device type, version compatibility, and registry reachability.
-2. **Stop supervisor**: the update script stops the Supervisor, keeping the user app running.
-3. **Fetch update**: attempt delta update via balenaEngine; fall back to full pull from registry or Docker Hub.
-4. **Apply to spare partition**: format the inactive root partition and unpack the new OS image.
-5. **Update Supervisor**: if the new OS includes a newer Supervisor, upgrade it.
-6. **Switch boot**: configure bootloader to use the new partition on next reboot.
-7. **Reboot**: device restarts into the updated OS.
+## 1. Pre-flight checks
 
-> **Note**: Logs for update failures are in `/mnt/data/balenahup/` (or `/mnt/data/resinhup/`).
+The update script validates:
 
-{/* ...remaining detailed steps, error handling, sample logs ... */}
+- Target release compatibility (2.x → 2.x only) and device type match.
+- Connectivity to balenaCloud registry (and Docker Hub as a fallback).
+- Sufficient free space on the inactive partition.
+
+If any check fails the script aborts and reports `OS update failed`.
+
+## 2. Quiesce the Supervisor
+
+The script stops the Supervisor to avoid conflicts with image pulls or bind-mount updates. Your application containers remain running to minimise downtime.
+
+## 3. Fetch the new host OS
+
+The updater first searches for delta artifacts between the current and target host releases. When deltas are available they dramatically reduce bandwidth. If a delta cannot be applied, balenaEngine pulls the full host image from the balenaCloud registry and, as a last resort, Docker Hub.
+
+## 4. Prepare the inactive partition
+
+The unused root partition is formatted and populated with the unpacked image. Boot partition changes (firmware, bootloader settings) are applied selectively—certain files like custom splashes are preserved; see the [hostapp update hooks](https://github.com/balena-os/meta-balena/tree/master/meta-balena-common/recipes-support/hostapp-update-hooks/files) for the exact exclusion list.
+
+## 5. Supervisor alignment
+
+If the target OS bundles a newer Supervisor release, the updater flashes it so the container runtime and OS stay compatible.
+
+## 6. Bootloader switch and reboot
+
+Once the new partition is ready, boot configuration is updated to point at it. The device reboots into the freshly written OS. Should the boot fail, rollback mechanisms (documented in [Rollbacks](/reference/OS/updates/rollbacks)) revert to the previous partition automatically.
+
+## Observability and logs
+
+- Update progress appears in the dashboard device timeline and via `balena device status`.
+- Detailed logs live in `/mnt/data/balenahup/` (or legacy `/mnt/data/resinhup/`). Review these when diagnosing failures.
+- Devices continue running your application even when updates fail. Restart the Supervisor to restore normal operation if you triggered the update manually (`systemctl start balena-supervisor` from the host shell).
+
+## Automatic rollbacks
+
+balenaOS includes two rollback mechanisms:
+
+- **rollback-health** monitors core services after reboot and reverts if health checks fail.
+- **rollback-altboot** detects boot failures and switches back before the device becomes unreachable.
+
+Learn how these safeguards work in the [Rollbacks guide](/reference/OS/updates/rollbacks).

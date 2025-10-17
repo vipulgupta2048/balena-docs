@@ -1,0 +1,83 @@
+---
+title: "Billing"
+description: "Manage plans, invoices, credits, and device usage for your balenaCloud organizations."
+sidebarTitle: "Billing"
+---
+
+## Overview
+
+Billing lives at the organization level. To review or update billing, select an organization in the dashboard and open the **Billing** tab.
+
+![Billing navigation](https://docs.balena.io/img/common/billing/billing_nav.webp)
+
+From here you can switch plans, update payment details, download invoices, monitor usage, and purchase credits. For help with billing, contact [solutions@balena.io](mailto:solutions@balena.io).
+
+## Change plans
+
+Click **Change plan** to upgrade or downgrade.
+
+![Current plan](https://docs.balena.io/img/common/billing/current_plan.webp)
+
+Select your preferred tier and complete the billing form.
+
+![Plan selection](https://docs.balena.io/img/common/billing/plan_selection.webp)
+
+![Billing information](https://docs.balena.io/img/common/billing/billing_info.webp)
+
+Some plan changes require support from our customer success team. If prompted, email [solutions@balena.io](mailto:solutions@balena.io) for assistance.
+
+## Review usage and invoices
+
+The top of the billing page summarizes the upcoming charge amount and due date.
+
+![Subscription summary](https://docs.balena.io/img/common/billing/sub_sum.webp)
+
+Scroll down to review active devices and collaborators.
+
+![Usage summary](https://docs.balena.io/img/common/billing/usage.webp)
+
+Further down, manage payment methods, update account information, and download invoices.
+
+![Account details](https://docs.balena.io/img/common/billing/account_details.webp)
+
+## Work with credits
+
+Credits let you pre-pay for overage device usage. On paid plans (Pilot and above), you can purchase credits to reduce month-end overage charges. The more credits you buy (and the more existing credits you hold), the better your rate.
+
+View and manage credits from the **Credits** tab.
+
+![Credits navigation](https://docs.balena.io/img/common/billing/credits_nav.webp)
+
+The credits dashboard shows purchase history, remaining balance, and lets you initiate new purchases. balena automatically applies available credits before charging overages in arrears.
+
+<Warning>
+Credits expire 10 years after purchase. If no credit activity occurs for two consecutive years, balena may cancel outstanding credits after providing 60 days' notice. Credits are non-refundable, non-transferable between organizations, and only apply to Microservices fleets. Purchase credits at least 24 hours before the monthly billing renewal.
+</Warning>
+
+## Understand dynamic billing
+
+Usage above your plan allowance (after applying credits) is billed monthly in arrears. balena calculates overage based on the peak number of active devices and collaborators during the billing period.
+
+- Every device that is active (online or offline) counts toward usage.
+- Users are billed at the highest role they held during the period (for example, a user promoted to Developer for a week counts as Developer for the whole month).
+
+Line items for additional usage appear under **Add-ons** on your invoice. You can pre-purchase additional allowances (for example, with credits) if you prefer to avoid dynamic charges.
+
+## Deactivate inactive devices
+
+If devices will remain powered off for extended periods, mark them **Inactive** to pay a one-time deactivation fee instead of ongoing usage. Inactive devices are excluded from monthly counts until they come back online. Deactivate devices from the [device settings page](/learn/manage/actions/#deactivate-device).
+
+## Inactive vs. offline
+
+- **Inactive**: The device was [deactivated](/learn/manage/actions/#deactivate-device) or preregistered but has not yet connected to the balenaCloud API.
+- **Offline**: The device currently lacks Cloudlink connectivity and has not contacted the API recently.
+
+Offline devices that remain active still count toward billing because they can receive updates once they reconnect. After you deactivate a device, you cannot monitor or update it until it is reactivated.
+
+## Device freezing
+
+Overdue invoices cause balenaCloud to freeze devices in that organization. Frozen devices continue running their existing containers, but you cannot manage them from the dashboard until payment is resolved. A snowflake icon marks frozen devices. Update your payment method or email [solutions@balena.io](mailto:solutions@balena.io) to restore access.
+
+## Learn more
+
+See [plans and pricing](https://www.balena.io/pricing/) for plan features, and [organization management](/learn/accounts/organizations) for guidance on billing roles.

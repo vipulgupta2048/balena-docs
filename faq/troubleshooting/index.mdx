@@ -1,0 +1,99 @@
+---
+title: "Troubleshooting"
+description: "Solve common balenaCloud issues from dashboard access to device connectivity, and find device-specific diagnostics."
+sidebarTitle: "Troubleshooting"
+---
+
+## Overview
+
+Use this hub to troubleshoot the most common balenaCloud and device issues. Start with the general fixes below, then jump to device-specific notes for additional LED patterns, boot tips, and hardware quirks.
+
+<Info>
+Device-specific sections expand over time. If you need guidance for a device not yet listed, visit the [forums](https://forums.balena.io/) or contact support.
+</Info>
+
+## General fixes
+
+### Terminal closes during an update
+
+When you push a new release, the web terminal closes automatically because containers restart. Wait for the update to finish, then launch a new terminal session from the dashboard.
+
+### Problems signing in to the dashboard
+
+Browser extensions or ad blockers can prevent social logins from working. Whitelist `*.balena-cloud.com` (and other balena domains) or disable extensions such as BrowserShark temporarily while you authenticate.
+
+### Scripts fail with `$'\r': command not found`
+
+Windows adds carriage returns to line endings, which bash interprets as `\r`. Configure Git to convert line endings to LF on checkout. See [GitHub's Windows guide](https://help.github.com/articles/dealing-with-line-endings/#platform-windows) for instructions.
+
+### Device repeatedly drops from Wi-Fi
+
+Noisy 2.4 GHz networks can cause intermittent connectivity. Try a 5 GHz-capable Wi-Fi adapter or relocate the device away from interference sources.
+
+### "Unsupported syscall: 384" when building with QEMU
+
+This warning appears when emulating an architecture that lacks the `getrandom(2)` system call. QEMU falls back to `/dev/urandom`, so you can ignore the message.
+
+### Device never shows up in the dashboard
+
+If a device remains offline after 10 minutes:
+
+- Confirm Wi-Fi credentials or Ethernet connections (see [network requirements](/reference/OS/network#network-requirements-and-proxies)).
+- Check LED indicators against the device's error codes.
+- Connect an HDMI display to verify the OS booted properly. If you see rainbow bars or a blank screen, reflash the SD card.
+
+If you still cannot connect, gather [device diagnostics](/reference/diagnostics/#device-diagnostics) and reach out via [balena support](https://www.balena.io/support).
+
+### "This is the wrong balena device" error
+
+Check for the following issues:
+
+- Missing or corrupted `config.json`
+- Mismatched UUID in `config.json`
+- Attempting to SSH into the wrong device IP address
+
+Contact support if the issue persists after validating the configuration.
+
+## Device-specific troubleshooting
+
+### Raspberry Pi family
+
+#### Device does not boot
+
+Check the ACT LED against the [Raspberry Pi error codes](https://elinux.org/R-Pi_Troubleshooting#Green_LED_blinks_in_a_specific_pattern). If no codes appear, connect a monitor via HDMI to capture boot logs. A Raspberry Pi 2 requires a Pi 2-specific balenaOS image; Pi 1 images will not boot.
+
+#### Connectivity issues
+
+If the dashboard shows the balena logo with a prompt to check connectivity, verify Ethernet or Wi-Fi credentials. If the indicator LED never displayed an error, let support know when you report the issue.
+
+#### SD card corruption
+
+A `recovery login` prompt usually indicates a corrupted SD card. Reformat the card and reflash the image. Replace the media if problems continue.
+
+#### LED error codes
+
+- **Four flashes**: Device cannot reach the internet. Confirm network credentials and open the ports listed in the [network requirements](/reference/OS/network#network-requirements-and-proxies). If problems continue, ask for help on the [forums](https://forums.balena.io/).
+- **Seven flashes**: Boot loader cannot find `kernel.img`. Make sure you flashed an image that matches your hardware (for example, Raspberry Pi 2 vs. Raspberry Pi 1).
+- **Power warning icon**: A flashing rainbow square indicates insufficient power. Try a higher-quality power supply and USB cable. The Raspberry Pi wiki has more details on [power troubleshooting](http://elinux.org/R-Pi_Troubleshooting#Troubleshooting_power_problems).
+
+### NVIDIA Jetson family
+
+#### Jetson Nano will not boot balenaOS
+
+Jetson Nano devices shipped with L4T 32.5 or newer store boot firmware in QSPI flash. If the board only boots the NVIDIA Ubuntu image, use [Jetson Flash](https://github.com/balena-os/jetson-flash) once to program the initial balenaOS boot chain. After that, future updates come through the dashboard.
+
+<Warning>
+Never interrupt a balenaOS update on Jetson hardware. Loss of power or network connectivity during the update can brick the device, requiring a full reflash.
+</Warning>
+
+#### Identify the installed L4T version
+
+Run `uname -a` to view the kernel version and L4T release. You can also check the [balena Jetson repository](https://github.com/balena-os/balena-jetson/tree/master/layers/meta-balena-jetson/recipes-bsp/tegra-binaries) for the mapping between balenaOS releases and L4T versions.
+
+#### Custom device trees
+
+Only Jetson Nano and Jetson TX2 devices (with U-Boot support) allow custom device trees. Follow the instructions in the [hardware guide](https://docs.balena.io/learn/develop/hardware/i2c-and-spi/#jetson-devices) to apply them.
+
+## Need something else?
+
+Browse the community [forums](https://forums.balena.io/) or contact [balena support](https://www.balena.io/support) with logs and diagnostics so we can help you debug further.

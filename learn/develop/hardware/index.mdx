@@ -1,0 +1,40 @@
+---
+title: "Interact with hardware"
+description: "Expose GPIO, I2C, SPI, and other device interfaces from your balena containers."
+sidebarTitle: "Hardware access"
+---
+
+## Access device interfaces
+
+Single-container fleets run in [privileged mode](https://docs.docker.com/engine/reference/commandline/run/#privileged) by default, so they inherit `/dev` access much like a standard Linux environment. That means you can talk to serial buses, sensors, and displays without extra configuration.
+
+Multicontainer fleets start with tighter defaults. Grant access explicitly by either:
+
+- Setting `privileged: true` on the service, or
+- Adding specific capabilities and devices via `cap_add` and `devices`.
+
+Example service exposing I2C and UART peripherals:
+
+```yaml
+gpio:
+  build: ./gpio
+  devices:
+    - "/dev/i2c-1:/dev/i2c-1"
+    - "/dev/mem:/dev/mem"
+    - "/dev/ttyACM0:/dev/ttyACM0"
+  cap_add:
+    - SYS_RAWIO
+```
+
+<Warning>
+If you are not using one of the [recommended balena base images](https://docs.balena.io/reference/base-images/balena-base-images/), you may need to manage `/dev` updates yourself by configuring [udev](https://www.freedesktop.org/software/systemd/man/udev.html).
+</Warning>
+
+## Next steps
+
+Dive deeper with our hardware-specific guides:
+
+- [GPIO overview](https://docs.balena.io/learn/develop/hardware/gpio)
+- [I2C and SPI](https://docs.balena.io/learn/develop/hardware/i2c-and-spi)
+- [USB access](https://docs.balena.io/learn/develop/hardware/usb)
+- [Jetson Orin devices](https://docs.balena.io/learn/develop/hardware/jetson-orin/jetson-agx-orin-devkit/)

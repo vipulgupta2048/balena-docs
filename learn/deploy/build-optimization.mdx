@@ -1,0 +1,115 @@
+---
+title: "Optimize balena builds"
+description: "Practical steps to shorten balenaCloud build pipelines and ship leaner container images."
+sidebarTitle: "Build optimization"
+---
+
+## Why optimize builds?
+
+Tuning your Dockerfiles makes balenaCloud releases faster to build, push, and download. The tips below focus on keeping the builder cache hot, slimming layers, and eliminating wasted work.
+
+<Info>
+For strategies that reduce image size with multi-stage builds, see the [Services masterclass](https://docs.balena.io/learn/more/masterclasses/services-masterclass/#6-multi-stage-builds).
+</Info>
+
+## Cache-friendly Dockerfiles
+
+### Move `ADD` and `COPY` near the end
+
+Docker compares file contents for `ADD` and `COPY`. Any change—even file metadata—invalidates every subsequent layer. Keep package installs and source compilation steps ahead of these instructions so they benefit from caching.
+
+### Minimize the number of layers
+
+Each `RUN`, `COPY`, or `ADD` statement adds a layer. Use logical command chaining to reduce intermediate layers while keeping the file readable:
+
+```dockerfile
+RUN apt-get update \
+  && apt-get install -y python3 \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+```
+
+Avoid chaining when it hurts long-term maintainability; clarity still wins.
+
+### Skip unnecessary packages
+
+Install only what the container needs in production. Trimming “nice to have” tools reduces dependencies, image size, and attack surface.
+
+## Lean runtime images
+
+### Embrace multi-stage builds
+
+balenaCloud supports [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/). Use one stage for heavy build tooling and a separate runtime stage for the minimal set of artifacts:
+
+```dockerfile
+FROM golang:1.24.3-bookworm AS build
+WORKDIR /go/src/github.com/balena-io-projects/app
+COPY /app ./
+RUN go build
+
+FROM debian:bookworm-20250428-slim
+COPY --from=build /go/src/github.com/balena-io-projects/app/ ./
+CMD ["./app"]
+```
+
+balena base images ship in `build` and `run` variants—start with `build` during compilation, then switch to `run` for a slimmer final image. For the absolute minimum footprint, you can target Docker’s empty `scratch` image, but you must statically compile the app or bring every dependency yourself.
+
+### Clean up after install steps
+
+Purge caches and temporary artifacts inside the same layer that created them so the cleanup survives future layers:
+
+```dockerfile
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    libsqlite3-dev \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/*
+```
+
+Removing downloaded tarballs or build staging files has the same benefit—smaller images and quicker delta updates.
+
+## Keep context small
+
+### Use `.dockerignore`
+
+Exclude docs, screenshots, and other project assets you do not need on device. A tight build context reduces upload time and keeps the builder cache focused on meaningful files.
+
+### Avoid `apt-get upgrade`
+
+`apt-get upgrade` or `dist-upgrade` can fail inside unprivileged containers and bloats the root filesystem. If you require a newer package, list it explicitly in `apt-get install`.
+
+<Warning>
+Running `apt-get update` on its own line breaks caching when upstream archives rotate. Pair it with the install step in the same `RUN` command.
+</Warning>
+
+### Parallelize independent downloads
+
+If two long-running commands do not depend on each other, start them in the background and wait for both to finish:
+
+```dockerfile
+RUN wget my-source-1.tar.gz & \
+    wget my-source-2.tar.gz & \
+    wait
+```
+
+## Pro tips from the balena team
+
+- Add `&& npm cache clean --force && rm -rf /tmp/*` after global `npm install` commands to remove package cache and temp directories.
+- Follow `apt-get update` with `rm -rf /var/lib/apt/lists/*` (or `/var/lib/apt/*`) to discard package indexes once installs finish.
+- Combine small `RUN` instructions when it preserves clarity to shrink metadata and speed delta downloads, for example:
+  ```dockerfile
+  RUN mkdir /var/run/sshd \
+    && echo 'root:balenaOS' | chpasswd \
+    && sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+  ```
+- Prefer `--no-install-recommends` with `apt-get install` to avoid optional packages.
+- Exclude locales and docs you do not ship by writing a configuration file such as:
+  ```
+  path-exclude /usr/share/doc/*
+  path-exclude /usr/share/man/*
+  path-exclude /usr/share/locale/*
+  path-include /usr/share/locale/en*
+  ```
+
+Share these conventions with your team so every service in a multicontainer project benefits from faster builds.

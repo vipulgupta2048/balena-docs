@@ -1,0 +1,78 @@
+---
+title: "SAML app for Microsoft Entra ID"
+description: "Configure Microsoft Entra ID (Azure AD) as a SAML 2.0 identity provider for balenaCloud."
+sidebarTitle: "Microsoft Entra ID"
+---
+
+## Overview
+
+Follow these steps to connect Microsoft Entra ID (formerly Azure Active Directory) to balenaCloud. When you finish, download the federation metadata XML so you can [link the IdP in balenaCloud](/learn/accounts/enterprise-sso/#link-a-saml-identity-provider).
+
+<Info>
+You need Entra ID privileges that allow you to create enterprise applications and assign users.
+</Info>
+
+## Create an enterprise application
+
+1. Open the [Microsoft Entra admin center](https://entra.microsoft.com/#home).
+2. Navigate to **Identity → Applications → Enterprise applications**.
+3. Select **+ New application**.
+
+![Create new enterprise app in Microsoft Entra ID](https://docs.balena.io/img/common/saml/microsoft-entra-id/create-new-app.webp)
+
+### Create your own application
+
+1. At the top of the gallery, choose **+ Create your own application**.
+2. Enter a name for the integration (for example, `balenaCloud SSO`).
+3. Keep the default option to integrate with any other application you do not find in the gallery.
+4. Click **Create**.
+
+![Create a custom app](https://docs.balena.io/img/common/saml/microsoft-entra-id/create-your-own-application.webp)
+
+## Configure single sign-on
+
+1. In the application menu, choose **Single sign-on**.
+2. Select **SAML** as the single sign-on method.
+
+![Configure SSO](https://docs.balena.io/img/common/saml/microsoft-entra-id/configure-single-sign-on.webp)
+
+### Basic SAML configuration
+
+1. In the **Basic SAML Configuration** card, click **Edit**.
+2. Decide on a balenaCloud SSO identifier (for example, `acme`).
+3. Enter the following values, replacing `<sso-identifier>` with your identifier:
+   - **Identifier (Entity ID)**: `https://api.balena-cloud.com/auth/saml/<sso-identifier>`
+   - **Reply URL (Assertion Consumer Service URL)**: `https://api.balena-cloud.com/auth/saml/<sso-identifier>/callback`
+4. Click **Save**.
+
+![Basic SAML configuration](https://docs.balena.io/img/common/saml/microsoft-entra-id/basic-saml-configuration.webp)
+
+### Set the unique user identifier
+
+1. Under **Attributes & Claims**, click **Edit**.
+2. Select the **Unique User Identifier** row.
+3. Change **Source attribute** to `user.mail`.
+4. Save the change.
+
+![Edit Unique User Identifier row](https://docs.balena.io/img/common/saml/microsoft-entra-id/unique-user-identifier.webp)
+![Change source attribute](https://docs.balena.io/img/common/saml/microsoft-entra-id/change-source-attribute.webp)
+
+### Assign users and groups
+
+1. Open **Users and groups** in the left navigation.
+2. Add the users or groups that should have access to balenaCloud.
+3. Click **Assign**.
+
+![Assign users or groups](https://docs.balena.io/img/common/saml/microsoft-entra-id/assign-users-and-groups.webp)
+
+### Download the federation metadata XML
+
+1. Return to the **Single sign-on** page.
+2. Under **SAML Signing Certificate**, choose **Download** next to **Federation Metadata XML**.
+3. Save the file for upload to balenaCloud.
+
+![Download XML](https://docs.balena.io/img/common/saml/microsoft-entra-id/download-metadata-xml.webp)
+
+## Finish the integration
+
+With the XML downloaded, complete the setup in balenaCloud by [linking the identity provider](/learn/accounts/enterprise-sso/#link-a-saml-identity-provider). Once linked, your team can authenticate through Microsoft Entra ID using Enterprise SSO.

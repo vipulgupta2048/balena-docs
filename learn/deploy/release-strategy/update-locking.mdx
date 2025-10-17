@@ -1,0 +1,82 @@
+---
+title: "Update locks"
+description: "Pause balena Supervisor updates during critical sections with per-service lockfiles."
+sidebarTitle: "Update locks"
+---
+
+## Why lock updates?
+
+Update locks tell the balena Supervisor to delay restarting your services while critical code runs. They are essential for protecting long-running tasks and preventing unwanted reboots triggered by configuration changes.
+
+<Info>
+Locks are respected per service. In a multicontainer release, **all** services must be free of locks before the Supervisor applies a new release.
+</Info>
+
+## Lock locations by Supervisor version
+
+| Supervisor version | Lockfile path | Notes |
+| --- | --- | --- |
+| v13.1.0 and newer | `/tmp/balena/updates.lock` | Lockfiles are owned by the `nobody` user (UID 65534). |
+| v7.22.0 – v13.0.x | `/tmp/balena/updates.lock` | Legacy path `/tmp/resin/resin-updates.lock` is still cleared for compatibility. |
+| v4.0.0 – v7.21.x | `/tmp/resin/resin-updates.lock` | Cleared automatically at boot. |
+| < v4.0.0 | `/data/resin-updates.lock` | Only supported on balenaOS 1.x images. Avoid this path if possible. |
+
+<Warning>
+Deleting `/tmp/balena` (or the legacy `/tmp/resin`) returns a `resource busy` error because the Supervisor holds the directory open. Leave it in place and only manage the lockfile itself.
+</Warning>
+
+## How to acquire the lock
+
+Create the lockfile with exclusive access so the Supervisor can detect ownership correctly. Simply touching the file—`touch /tmp/balena/updates.lock`—does **not** work because it omits the exclusivity flag.
+
+### Shell example
+
+```sh
+lockfile /tmp/balena/updates.lock
+# critical work
+rm -f /tmp/balena/updates.lock
+```
+
+The `lockfile` utility ships with the `procmail` package. You can also use `flock`:
+
+```sh
+flock /tmp/balena/updates.lock -c 'run-critical-task'
+```
+
+### JavaScript example
+
+```js
+import lockFile from 'lockfile';
+
+lockFile.lock('/tmp/balena/updates.lock', (err) => {
+  if (err) throw new Error('Could not acquire lock', { cause: err });
+
+  doCriticalWork();
+
+  lockFile.unlock('/tmp/balena/updates.lock', (unlockErr) => {
+    if (unlockErr) throw unlockErr;
+  });
+});
+```
+
+### Python example
+
+```python
+from lockfile import LockFile
+
+with LockFile("/tmp/balena/updates"):
+    do_critical_work()
+```
+
+## Override a stuck lock
+
+Occasionally you may need to force an update even though a service left a lock behind. There are two supported approaches:
+
+1. Toggle **Override the update lock** in the fleet or device configuration UI. Disabling the toggle afterwards re-enables normal lock behaviour.
+2. Call the Supervisor HTTP API `/v1/update` endpoint with `{ "force": true }` in the request body to trigger a one-time override.
+
+Both options remove existing lockfiles so the update can proceed. Services must recreate locks if they still need protection after the override finishes.
+
+<Note>
+Locks prevent restarts and Supervisor-triggered reboots, but configuration changes that do not require a reboot still apply immediately.
+</Note>

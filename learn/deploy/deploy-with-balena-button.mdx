@@ -1,0 +1,93 @@
+---
+title: "Deploy with the balena button"
+description: "Give makers and customers a one-click path to provision a fleet on balenaCloud."
+sidebarTitle: "Deploy button"
+---
+
+## Overview
+
+The **Deploy with balena** button gives readers a one-click way to create a fleet, preconfigure it, and trigger the first deployment on [balenaCloud](https://dashboard.balena-cloud.com). When someone clicks the button they are taken to the dashboard with the deployment dialog filled out for them, including any configuration defaults you ship with the project.
+
+<Frame>
+[![Deploy with balena button](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy)
+</Frame>
+
+Opening the advanced options in the modal exposes every parameter you can pre-seed from your project. If the project includes a [`balena.yml`](#configure-with-balenayml) configuration file, those values are displayed automatically.
+
+<Frame>
+[![Create fleet modal showing deploy options](https://docs.balena.io/img/configuration/deploy-to-balena.webp)](https://docs.balena.io/img/configuration/deploy-to-balena.webp)
+</Frame>
+
+<Warning>
+Git submodules are not currently supported by the deploy button. Their contents are ignored during the build step.
+</Warning>
+
+## Add the button to a project
+
+To embed the button in a README or landing page, add the following markdown snippet and replace `<your-repo-url>` with a public Git repository:
+
+```md title="README.md"
+[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=<your-repo-url>)
+```
+
+The example above uses an SVG asset because it renders crisply on GitHub. Swap the extension to `.png` if you prefer the PNG version. You can further tailor the button behaviour with [query string parameters](#query-string-parameters).
+
+### Query string parameters
+
+Append the following parameters to the `https://dashboard.balena-cloud.com/deploy` URL to control how the button behaves:
+
+- `repoUrl` — The project repository URL. The dashboard usually infers this from the HTTP referrer, but the lookup can fail on Firefox or when ad blockers strip headers. Explicitly setting this parameter is the safest option.
+- `tarballUrl` — An explicit tarball URL. If omitted, balenaCloud derives it from `repoUrl`.
+- `configUrl` — A direct link to the configuration file. Defaults to the `balena.yml` file in the repository root.
+- `defaultDeviceType` — The device selected in the *Create fleet* modal. Defaults to Raspberry Pi 4. View the [full device type list](https://docs.balena.io/reference/hardware/devices/) to find the slug you need.
+
+### Configure with `balena.yml`
+
+Ship a `balena.yml` file to define descriptive metadata, default configuration values, and any variables you want surfaced in the deployment modal. If the file lives outside of the repository root, provide its location with the `configUrl` parameter.
+
+```yaml title="balena.yml"
+name: balenaSound
+type: sw.application
+version: 3.5.2
+description: >-
+  Build a single or multi-room streamer for an existing audio device using a
+  Raspberry Pi! Supports Bluetooth, Airplay and Spotify Connect
+assets:
+  repository:
+    type: blob.asset
+    data:
+      url: 'https://github.com/balenalabs/balena-sound'
+  logo:
+    type: blob.asset
+    data:
+      url: >-
+        https://raw.githubusercontent.com/balenalabs/balena-sound/master/logo.png
+data:
+  applicationEnvironmentVariables:
+    - SOUND_VOLUME: 75
+    - AUDIO_OUTPUT: AUTO
+  defaultDeviceType: raspberry-pi
+  supportedDeviceTypes:
+    - raspberry-pi
+    - raspberry-pi2
+    - raspberrypi3
+    - raspberrypi4-64
+    - fincm3
+    - intel-nuc
+```
+
+- `type` — Required. Use `sw.application` for applications and `sw.block` for blocks. See the [block creation workflow](https://docs.balena.io/learn/develop/blocks/#creating-your-own-block).
+- `name` — The friendly name for the fleet.
+- `description` — A short explanation shown on [balenaHub](https://hub.balena.io) if you publish the project.
+- `assets` — Metadata such as a repository link or icon. Icons should be 512 × 512 px.
+- `data.applicationEnvironmentVariables` — Values injected into the container at runtime. Learn more in [Managing variables](https://docs.balena.io/learn/manage/variables/).
+- `data.applicationConfigVariables` — Host OS and supervisor settings that begin with `BALENA_` or `RESIN_`. See [Configuration management](https://docs.balena.io/learn/manage/configuration/).
+- `data.defaultDeviceType` — Sets the default hardware target.
+- `data.supportedDeviceTypes` — Enumerates devices the project supports.
+- `version` — A semantic version displayed in the dashboard and returned by the balena API (`release.semver`). If multiple releases reuse the same value, balena automatically appends `+revN` (for example `1.2.3+rev2`).
+
+<Info>
+Use semantic versioning for every release. Non-semver strings are deprecated and may fail to deploy in future platform updates.
+</Info>
+
+Publishing metadata-rich projects makes it easier for others to discover and deploy your work. Once everything is committed, push the repository and try the button locally to confirm the modal is populated as expected.

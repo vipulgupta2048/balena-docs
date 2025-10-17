@@ -1,0 +1,100 @@
+---
+title: "SSH access"
+description: "Open terminal sessions to balena devices through the dashboard, CLI, or direct SSH."
+sidebarTitle: "SSH access"
+---
+
+## Overview
+
+balena provides multiple SSH entry points so you can debug containers and the host OS:
+
+- A browser-based web terminal in the dashboard
+- The `balena device ssh` and `balena device tunnel` commands
+- Direct SSH clients using the device IP address or hostname
+
+<Info>
+Host OS SSH access requires balenaOS 2.7.5 or later. The tooling relies on [Cloudlink](/learn/welcome/security/#cloudlink) and is not designed for high availability or production ingress.
+</Info>
+
+## Use the dashboard terminal
+
+Open a fleet, choose a device, and locate the **Terminal** panel under the log output.
+
+![SSH Terminal](https://docs.balena.io/img/common/device/terminal.webp)
+
+1. Select the target: either **Host OS** or a running service container.
+2. Click **>_ Start terminal session**.
+3. Expand the window for a larger terminal if needed.
+
+<Note>
+Ensure the target service is running; the terminal cannot attach to containers that exit immediately. On macOS, use `⌘ + C` / `⌘ + V` for copy and paste. On other platforms, use the browser menu or `Ctrl + Insert` / `Shift + Insert`.
+</Note>
+
+## SSH with the balena CLI
+
+Install the [balena CLI](/reference/balena-cli) and add an SSH key to your account (see [Add an SSH key](#add-an-ssh-key-to-balenacloud)). Then open a terminal on your development machine:
+
+```bash
+balena device ssh <device-uuid>
+```
+
+Replace `<device-uuid>` with the device identifier from the dashboard or `balena device list`. By default, you land in the host OS shell.
+
+To target a service container, append the service name as defined in `docker-compose.yml`:
+
+```bash
+balena device ssh <device-uuid> main
+```
+
+<Info>
+Pipe commands for non-interactive sessions: `echo "uptime; exit" | balena device ssh <device-uuid>`.
+</Info>
+
+When you pass a fleet name or device UUID, the CLI routes traffic through Cloudlink. Provide an IP address or `.local` hostname to connect directly over the local network instead:
+
+```bash
+balena device ssh 192.168.1.23
+balena device ssh <device-uuid>.local
+```
+
+Connecting to a [production image](/reference/OS/overview#development-vs-production-mode) requires balena CLI v13.3.0+ and balenaOS v2.44.0+. Otherwise, add your SSH key to `config.json` (see [config.json → sshKeys](/reference/OS/configuration/#sshkeys)). Development images allow passwordless `root` by default—never expose them to the public internet.
+
+## Use a standalone SSH client
+
+The host OS listens on TCP port `22222`. Connect with any standard SSH client:
+
+```bash
+ssh -p 22222 <username>@<device-ip>
+```
+
+- Use `root` for direct host access. Production images authenticate against keys stored in `config.json`.
+- Use your balenaCloud username (found in dashboard preferences or `balena whoami`) to authenticate against the keys stored in your balenaCloud account. This also requires balenaOS v2.44.0 or later.
+
+For remote devices behind NAT or firewalls, open a tunnel first (next section).
+
+## Tunnel through Cloudlink
+
+`balena device tunnel` forwards any local port to a port on the device via Cloudlink. To expose SSH on your laptop's port `4321`:
+
+```bash
+balena device tunnel <device-uuid> -p 22222:4321
+```
+
+Then connect the SSH client to `127.0.0.1` and specify the forwarded port:
+
+```bash
+ssh -p 4321 <username>@127.0.0.1
+```
+
+Refer to the authentication guidance in the previous section for choosing the correct username.
+
+## Add an SSH key to balenaCloud
+
+Navigate to **Preferences → SSH Keys** in the dashboard.
+
+![SSH key preferences](https://docs.balena.io/img/common/main_dashboard/eekVBTI.webp)
+
+- Import an existing key from GitHub, or
+- Paste the public key from your development machine
+
+Follow [GitHub's SSH key guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) to generate a key pair if you do not already have one.

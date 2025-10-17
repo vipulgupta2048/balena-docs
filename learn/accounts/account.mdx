@@ -1,0 +1,70 @@
+---
+title: "Account management"
+description: "Create a balenaCloud account, manage credentials, API tokens, two-factor authentication, and close your account."
+sidebarTitle: "Account management"
+---
+
+## Overview
+
+A balenaCloud account lets you manage fleets, invite collaborators, and deploy software to devices. Use this guide to create an account, reset credentials, manage access tokens, enable two-factor authentication (2FA), and delete your profile if needed.
+
+## Sign up
+
+Create an account at the [balenaCloud signup page](https://dashboard.balena-cloud.com/signup). You can register with a GitHub or Google identity, or with an email address and password. Passwords must be at least eight characters long.
+
+## Reset your password
+
+Forgotten your password? Request a reset from the [password reset page](https://dashboard.balena-cloud.com/password-reset). Enter the email address linked to your balenaCloud account. If it exists, balenaCloud emails a reset link so you can choose a new password.
+
+## Add a password to a social login
+
+If you originally signed up through Google or GitHub and want a traditional password as well, open your [Preferences → Account details](https://dashboard.balena-cloud.com/preferences?tab=details) and set a password there.
+
+## Manage access tokens
+
+Access tokens authenticate you to the [API](/reference/api/overview/), [CLI](/reference/balena-cli), and SDKs ([Node.js](/reference/sdk/node-sdk), [Python](/reference/sdk/python-sdk)). Manage them from **Preferences → Access tokens**.
+
+![Access tokens tab](https://docs.balena.io/img/common/preferences/access_tokens.webp)
+
+balenaCloud issues two token types:
+
+- **Session tokens** refresh automatically and expire after seven days. You cannot revoke them manually, but you can refresh them through the [API](https://docs.balena.io/reference/api/resources/whoami/).
+- **API keys** persist until you revoke them. Name keys clearly, add descriptions, and download or copy the value immediately after creation.
+
+<Warning>
+balenaCloud only shows an API key once. Store it securely as soon as you create it.
+</Warning>
+
+You can revoke API keys from the list or generate new ones via the CLI (`balena api-key generate --name <NAME>`), [Node.js SDK](/reference/sdk/node-sdk/#auth-createapikey-name-code-promise-code-), or [Python SDK](/reference/sdk/python-sdk/#function-create_api_key-name-description-).
+
+## Understand fleet members
+
+Need to collaborate? Invite teammates to fleets or organizations and assign roles. See [Fleet members](/learn/accounts/fleet-members) for permissions and invitation steps.
+
+## Enable two-factor authentication
+
+Two-factor authentication (2FA) prompts for a six-digit code from an authenticator app in addition to your password. balenaCloud uses the industry-standard [Time-based One-Time Password (TOTP)](https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm).
+
+1. Sign in and open [Preferences → Two-factor Authentication](https://dashboard.balena-cloud.com/preferences/details).
+2. Click **Enable two-factor authentication**.
+3. Scan the QR code with an authenticator app such as [Google Authenticator](https://support.google.com/accounts/answer/1066447), [Authy](https://www.authy.com), or [1Password](https://1password.com).
+4. Enter the pairing code shown in the app.
+5. Download and store the recovery codes safely.
+
+![Enable two-factor authentication](https://docs.balena.io/img/common/preferences/enable_2fa.webp)
+
+<Note>
+2FA activates only after you finish pairing. You can complete the setup without being logged out mid-process.
+</Note>
+
+To disable 2FA later, return to the same tab, click **Disable two-factor authentication**, and confirm with your password.
+
+## Delete your account
+
+To permanently delete your balenaCloud account, open [Preferences → Account details](https://dashboard.balena-cloud.com/preferences?tab=details) and choose **Delete account**.
+
+![Delete balena account](https://docs.balena.io/img/screenshots/delete-balena-account.webp)
+
+<Warning>
+Deleting your account removes all fleets, devices, and data. If your account does not yet have a password, you will be prompted to set one before continuing. For GDPR-related data requests, follow the instructions in the [privacy policy](https://www.balena.io/privacy-policy/).
+</Warning>

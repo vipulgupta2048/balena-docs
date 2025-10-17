@@ -1,0 +1,152 @@
+---
+title: "Define a container"
+description: "Write Dockerfiles and package.json files that build reliably on balenaCloud."
+sidebarTitle: "Dockerfiles"
+---
+
+## Why Dockerfiles matter
+
+Every balena service ships as a container image. A well-structured Dockerfile ensures your dependencies install cleanly whether you build locally, on a device in local mode, or via the balenaCloud builders.
+
+<Info>
+Working through the [Services masterclass](https://docs.balena.io/learn/more/masterclasses/services-masterclass/) is a great way to reinforce these concepts.
+</Info>
+
+## Core Dockerfile instructions
+
+Keep your Dockerfiles readable and deterministic. The most common instructions are:
+
+- `FROM` — sets the base image and **must** be the first instruction.
+- `RUN` — executes commands during the image build, for example installing packages.
+- `COPY` / `ADD` — copies files into the image. Use `COPY` unless you need `ADD` to auto-extract a local tar archive.
+- `CMD` — defines the default command that starts when the container runs on the device.
+
+Consult the [Dockerfile reference](https://docs.docker.com/engine/reference/builder/) for less frequently used instructions.
+
+## Single-service projects
+
+Place a `Dockerfile` at the repo root to build a single service. balena automatically generates a `docker-compose.yml` that grants host networking, mounts firmware and kernel modules, and enables Supervisor access.
+
+```yaml
+version: '2.1'
+services:
+  main:
+    build:
+      context: .
+    privileged: true
+    restart: always
+    network_mode: host
+    volumes:
+      - 'resin-data:/data'
+    labels:
+      io.balena.features.kernel-modules: '1'
+      io.balena.features.firmware: '1'
+      io.balena.features.dbus: '1'
+      io.balena.features.supervisor-api: '1'
+      io.balena.features.balena-api: '1'
+volumes:
+  resin-data: {}
+```
+
+Add a `.dockerignore` to exclude files that do not belong in the build context; `.git` is ignored automatically.
+
+## Multiservice projects
+
+Create a folder for each service and place a `Dockerfile` (or `package.json` for Node.js) inside. Define the top-level `docker-compose.yml` yourself—see the [multicontainer guide](https://docs.balena.io/learn/develop/multicontainer/) for details.
+
+## Architecture-aware builds
+
+Most modern base images support [multi-platform manifests](https://docs.docker.com/build/building/multi-platform/). In that case you can simply reference the generic tag and the builder downloads the correct architecture at build time:
+
+```dockerfile
+FROM debian:trixie
+```
+
+When you need an architecture-specific image, choose the appropriate tag:
+
+```dockerfile
+FROM bh.cr/balenalabs/browser-aarch64
+```
+
+### Template variables (legacy projects)
+
+Older projects may still rely on `dockerfile.template` files containing placeholders such as `%%BALENA_MACHINE_NAME%%`. The builder replaces these with values derived from the fleet’s default device type:
+
+```dockerfile
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node
+
+COPY package.json /package.json
+RUN npm install
+
+COPY src/ /usr/src/app
+CMD ["node", "/usr/src/app/main.js"]
+```
+
+<Warning>
+Templates evaluate once per release. If your fleet mixes different device types, `%%BALENA_MACHINE_NAME%%` matches only the fleet’s default device. Prefer multi-platform base images or use `%%BALENA_ARCH%%` when architectures align.
+</Warning>
+
+## Multiple Dockerfiles
+
+Use architecture- or device-specific Dockerfiles when templates are not flexible enough. The builder picks the most specific option in this order:
+
+1. `Dockerfile.<device-type>`
+2. `Dockerfile.<arch>`
+3. `Dockerfile.template`
+
+For example, `Dockerfile.raspberrypi3` overrides the generic template for Raspberry Pi 3 fleets, while other device types fall back to `Dockerfile.template`.
+
+## Node.js projects via `package.json`
+
+balena can build Node.js services directly from a `package.json` placed in the service directory:
+
+- The builder installs dependencies with `npm install`.
+- It respects the `engines.node` version (defaults to `0.10.22` if unspecified).
+- It runs `npm start` when the container launches (or `node server.js` if no start script exists).
+
+Example:
+
+```json title="package.json"
+{
+  "name": "text2speech",
+  "description": "Simple balena app that uses Google's TTS endpoint",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/balena-io/text2speech.git"
+  },
+  "scripts": {
+    "preinstall": "bash deps.sh"
+  },
+  "version": "0.0.3",
+  "dependencies": {
+    "speaker": "~0.0.10",
+    "request": "~2.22.0",
+    "lame": "~1.0.2"
+  },
+  "engines": {
+    "node": "0.10.22"
+  }
+}
+```
+
+`deps.sh` (referenced in `preinstall`) runs inside the build container, so you can install packages that your Node.js code depends on:
+
+```bash
+apt-get update && apt-get install -y \
+  alsa-utils \
+  libasound2-dev
+
+mv sound_start /usr/bin/sound_start
+```
+
+If you prefer full control, replace the implicit build with a Dockerfile that installs Node.js and runs your app explicitly.
+
+## Container requirements
+
+The Supervisor uses `/tmp/balena` for update locks and other coordination. Do not delete this directory inside your service.
+
+## Next steps
+
+- Explore the [balena base images](https://docs.balena.io/reference/base-images/balena-base-images/) to pick the right starting point.
+- Learn how to [optimize your Dockerfiles](https://docs.balena.io/learn/deploy/build-optimization/).
+- Dive into [persistent storage strategies](https://docs.balena.io/learn/develop/runtime/#storage-patterns).

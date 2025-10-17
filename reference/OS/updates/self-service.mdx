@@ -1,49 +1,51 @@
 ---
 title: "Self-service updates"
 sidebarTitle: "Self-Service Updates"
+description: "Trigger host OS upgrades for individual devices or entire fleets and understand data limits, progress, and locks."
 ---
-## Which devices and versions are supported?
 
-Since we periodically release updates and improvements to balenaOS (the host OS running on all balena devices), we encourage you to keep your devices up to date. We offer self-service host OS updates between 2.x versions and from 1.x to 2.x versions. All 2.x devices will default to delta-based updates if available, thus reducing the size of the update sent over the network.
+## Supported scenarios
 
-<Note>
-**Note:**
+balenaCloud supports self-service host OS upgrades between all balenaOS 2.x releases and from 1.x → 2.x. Development and production images both qualify. When deltas are available (most 2.x → 2.x paths) the updater uses them automatically to minimise bandwidth.
 
-BalenaOS 1.x to 2.x updates limit the amount of data you can have in your application's `/data` folder to about 170MB (compressed). If you have more data, the update will fail and your device won't be modified.
-</Note>
+:::warning 1.x to 2.x data limit
+Upgrading from balenaOS 1.x caps the `/data` partition at roughly 170 MB compressed. Larger payloads cause the update to abort without modifying the device. Clean up or offload data before retrying.
+:::
 
-Self-service updates are available for both `production` and `development` balenaOS variants.
+If a device type or version is missing from the dropdown, raise a ticket via the [forums](https://forums.balena.io/); we continually expand coverage.
 
-For device types and balenaOS versions that are not yet supported, please contact us on the [forums](https://forums.balena.io/). We are continuously expanding the range of versions and types that can be updated.
+## Run a host OS update
 
-## Running an update
+1. Open the device page and switch to **Settings → OS version**.
+2. Pick the target version from the dropdown.
+3. Click **Save**—the update begins immediately.
 
-To run an update for an individual device, navigate to that device's *Settings* tab, go to the section *OS version*, and select the version of balenaOS you would like to update to. After making your selection, click the *Save* button.
-<Frame>
-[![Update device](https://docs.balena.io/img/common/updates/update-os.webp)](https://docs.balena.io/img/common/updates/update-os.webp)
-</Frame>
-Updates can also be made to multiple devices in the same fleet. From the device list, click the checkbox to the left of any online devices you wish to update. Then use the *Modify* dropdown to choose the *OS version* option to set and trigger an update on all selected devices.
-<Frame>
-[![Device group update](https://docs.balena.io/img/common/updates/group-update.webp)](https://docs.balena.io/img/common/updates/group-update.webp)
-</Frame>
-From the dialog box that opens, select the OS version you would like to update to and click the `Apply` button to trigger the OS update.
-<Frame>
-[![device group update, dialog box](https://docs.balena.io/img/common/updates/group-update-dialog.webp)](https://docs.balena.io/img/common/updates/group-update-dialog.webp)
-</Frame>
-<Note>
-**Note:**
+![Update device](https://docs.balena.io/img/common/updates/update-os.webp)
 
-Updates to the balena Supervisor, balena's agent on the device, can be [triggered independently](https://docs.balena.io/reference/supervisor/supervisor-upgrades).
-</Note>
+For fleet-wide updates:
 
-After an update begins, the device summary page will show a progress bar that marks the steps completed for the update. Some steps that take longer, such as the device downloading the new OS image, may make the progress bar appear stuck. This doesn't mean anything has gone wrong with your update. We are working on making the update process more informative.
+1. On the fleet device list, select the devices you want to upgrade (online devices only).
+2. Click **Modify → OS version**.
+3. Choose the desired release and select **Apply**.
 
-Update time can vary significantly, depending on the speed of your network, the speed of your SD card (or other storage medium), and your device performance.
+![Device group update](https://docs.balena.io/img/common/updates/group-update.webp)
 
-If your balenaOS update fails for any reason, the device should still be recoverable. For devices running balenaOS 2.x, the user application should still be running normally, and the reasons for failure can be examined through the update logs at `/mnt/data/balenahup/` (or potentially the legacy location `/mnt/data/resinhup/`). If you have any issues, please contact us on the [troubleshooting section of the forums](https://forums.balena.io/c/troubleshooting).
+![Device group update dialog](https://docs.balena.io/img/common/updates/group-update-dialog.webp)
+
+:::info Supervisor updates
+Host OS updates may include a newer Supervisor, but you can also [trigger Supervisor-only upgrades](/reference/supervisor/supervisor-upgrades) when you want to stay on the same OS.
+:::
+
+## Monitoring progress
+
+- The device summary shows a step-by-step progress indicator. Long-running phases (image download, write) may stall visually; refresh the page if needed.
+- Each update emits timeline events and logs. Investigate failures at `/mnt/data/balenahup/` (or legacy `/mnt/data/resinhup/`).
+- Update duration depends on network throughput, storage performance, and whether a delta or full image is required.
+
+If an update fails, the previous OS remains active and your application keeps running. Address the error (network reachability, disk space, broken SD card) and retrigger when ready. Contact the [Troubleshooting forum](https://forums.balena.io/c/troubleshooting) if you need help interpreting the balenahup logs.
 
 ## Update locks
 
-[Update locks](https://docs.balena.io/learn/deploy/release-strategy/update-locking/) is a mechanism that allows applications to enter critical sections of code and prevent updates that would interrupt the application from running. Update locks can also be used to delay the reboot that applies a hostOS update operation until the application exits the critical section by removing the update locks. HostOS update operations require the use of exclusive locks and will not respect shared locks. [Overriding update locks](https://docs.balena.io/learn/deploy/release-strategy/update-locking/#overriding-the-lock) will ignore existing locks and allow a hostOS update process to proceed with a reboot.
+[Update locks](/learn/deploy/release-strategy/update-locking/) let applications defer updates while running critical sections. Host OS upgrades require an **exclusive** lock; shared locks do not block them. Override locks deliberately only when you accept the risk of interrupting your workload.
 
-Check out our [update process](https://docs.balena.io/updates/update-process/) to understand how the process goes through each step.
+Review the [Host OS update process](/reference/OS/updates/update-process) for a detailed walkthrough of each phase.

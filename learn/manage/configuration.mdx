@@ -1,0 +1,74 @@
+---
+title: "Configuration variables"
+description: "Manage fleet and device configuration in balenaCloud using Supervisor and host OS settings."
+sidebarTitle: "Configuration"
+---
+
+## Overview
+
+Configuration variables let you change host OS and Supervisor behavior without rebuilding your services. Variables always start with the `BALENA_` or legacy `RESIN_` prefix and can be scoped at the fleet or device level.
+
+<Note>
+Configuration changes made in the dashboard do not apply while a device is in [local mode](/learn/develop/local-mode).
+</Note>
+
+Beginning with Supervisor v7.0.0, many supported variables appear automatically in the dashboard as soon as a device provisions. Fleet administrators can activate, override, or delete those defaults directly from the UI.
+
+## Explore available variables
+
+In addition to [service variables](/learn/manage/variables), you can manage behavior with Supervisor and device-type specific options. The [configuration list](/reference/supervisor/configuration-list) documents every supported variable along with valid values and minimum Supervisor versions.
+
+## Manage configuration at the fleet level
+
+Fleet configuration applies to every device in the fleet unless a device override exists.
+
+1. Open the fleet **Configuration** tab and find the variable you want to change.
+2. Click **Activate** to enable a default variable, or use the toggle for boolean values.
+3. Select the pencil icon to edit other values, or the trash can icon to remove the fleet-wide override and revert to the default.
+
+![Activate fleet level configuration](https://docs.balena.io/img/configuration/activate_default_config.webp)
+
+<Info>
+Device-level overrides appear beneath the fleet configuration list. Use **Define fleet-wide** to promote a device value to the entire fleet.
+</Info>
+
+If you need to clear overrides for specific devices, choose **Overrides** to delete the device-specific values and restore the fleet defaults.
+
+![Override device configuration](https://docs.balena.io/img/configuration/override_config.webp)
+
+## Manage configuration at the device level
+
+Device configuration affects only that device and overrides matching fleet-level settings.
+
+- Toggle boolean variables directly in the table.
+- Click the pencil icon to edit other values; a modal opens with the current setting.
+- Delete the variable to return to the fleet default (or the Supervisor default if no fleet setting exists).
+
+![Device configuration](https://docs.balena.io/img/configuration/device_config_variables.webp)
+
+![Edit device configuration](https://docs.balena.io/img/configuration/edit_device_config.webp)
+
+## Replace the boot splash screen
+
+Upload a custom splash image by activating **Define the PNG image to be used for the boot splash screen. Only supported by Supervisor versions >= v12.3.0.** on the fleet or device configuration page, then provide your PNG file.
+
+![Override the splash screen](https://docs.balena.io/img/configuration/override_splash_screen_config.webp)
+
+## Add custom configuration
+
+Use **Add custom configuration** to define variables beyond the predefined list. Custom entries must still begin with the `BALENA_` (or legacy `RESIN_`) prefix.
+
+1. Scroll past the predefined options and choose **Add custom configuration**.
+2. Enter the variable name and value, then click **Add**.
+
+![Add custom fleet](https://docs.balena.io/img/configuration/add_fleet_configuration.webp)
+
+![Add custom fleet configuration](https://docs.balena.io/img/configuration/variable_editor_config.webp)
+
+Device-specific custom configuration follows the same workflow. Select **Override** on a custom fleet variable to change its value for a single device.
+
+![Add custom device configuration](https://docs.balena.io/img/configuration/add_device_custom_variable.webp)
+
+<Info>
+You can also manage configuration through the API, SDK, or CLI. See the [Node.js SDK reference](/reference/sdk/node-sdk) and [balena CLI documentation](/reference/balena-cli/#envs) for example workflows.
+</Info>

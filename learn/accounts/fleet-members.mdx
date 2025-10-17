@@ -1,0 +1,64 @@
+---
+title: "Fleet members"
+description: "Invite collaborators to balenaCloud fleets and assign roles with the right level of access."
+sidebarTitle: "Fleet members"
+---
+
+## Overview
+
+Fleet owners can share access with teammates by inviting them as members. Paid plans unlock granular roles so you can tailor permissions to match responsibilities. For organization-wide collaboration, see [organization management](/learn/accounts/organizations).
+
+## Member roles
+
+| Role | Invite members | Delete fleet | Manage devices | Provisioning keys | Device actions | Tags | Variables | SSH access | Deploy | Configuration | Fleet settings |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **Administrator** | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| **Developer** | No | No | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| **Operator** | No | No | Yes | Yes | Yes | Yes | Yes | Yes | No | No | No |
+| **Observer** | No | No | No | No | No | No | No | No | No | No | No |
+
+<Info>
+The Administrator role exists only on paid plans. Observers have read-only access.
+</Info>
+
+### Administrator
+
+Administrators control membership and fleet settings. They can invite new members, delete the fleet, and perform every action available to other roles.
+
+### Developer
+
+Developers can manage software (push releases, edit fleet variables, download balenaOS images) in addition to everything operators can do. They cannot invite members or delete the fleet. Available on free and paid plans.
+
+### Operator
+
+Operators focus on device management: adding/removing devices, generating or revoking provisioning keys, performing device actions, updating tags, metadata, configuration, and environment variables. They also retain full [SSH access](/learn/manage/ssh-access). Operators cannot deploy new releases or modify fleet-level settings.
+
+### Observer
+
+Observers have view-only access to fleets and devices. They cannot trigger actions or modify configuration.
+
+## Invite fleet members
+
+1. Open the fleet and select the **Members** tab.
+2. Click **Add member**.
+3. Pick a role and enter the balenaCloud username or email address.
+
+![Add fleet member](https://docs.balena.io/img/common/app/add_member.webp)
+
+<Note>
+Prospective members must already have a balenaCloud account before you can invite them.
+</Note>
+
+Members appear in the list where you can change roles or remove access as needed.
+
+![Fleet member list](https://docs.balena.io/img/common/app/member_list.webp)
+
+Shared fleets are flagged in the invitee's dashboard so they can see which fleets belong to other owners.
+
+![Shared fleet indicator](https://docs.balena.io/img/common/app/shared_app.webp)
+
+Members can remove themselves via **Members → Modify → Delete member**. Only the fleet owner can restore access afterwards.
+
+<Warning>
+Removing your own membership immediately revokes access. Confirm before proceeding because the owner must re-invite you.
+</Warning>

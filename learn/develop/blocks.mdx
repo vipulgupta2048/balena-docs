@@ -1,0 +1,152 @@
+---
+title: "Develop with blocks"
+description: "Drop reusable services into multicontainer fleets and share them through balenaHub."
+sidebarTitle: "Blocks"
+---
+
+## What is a block?
+
+A block is a container image that delivers a focused capability—Bluetooth handling, sensor ingestion, dashboards, and more. Instead of rewriting the same boilerplate, add a block to your multicontainer fleet and reuse proven functionality.
+
+Blocks are built to:
+
+- Reduce time-to-first-value by shipping preconfigured services.
+- Encourage modular architectures where each capability lives in its own container.
+- Simplify sharing functionality across projects and organizations.
+
+<Frame>
+<img src="https://docs.balena.io/img/blocks/diagram-1.webp" alt="Overview diagram showing blocks plugged into a fleet" width="70%" />
+</Frame>
+
+## Add a block to your fleet
+
+Blocks are just container images, so include them in `docker-compose.yml` alongside your services:
+
+```yaml title="docker-compose.yml"
+version: '2'
+
+services:
+  browser:
+    image: bh.cr/balenablocks/browser-aarch64
+    privileged: true
+    network_mode: host
+
+  balena-node-hello-world:
+    build: ./balena-node-hello-world
+    restart: always
+    depends_on:
+      - browser
+    ports:
+      - "80"
+
+  importantBananaDb:
+    image: importantBanana/db:latest
+    ports:
+      - "8080"
+    environment:
+      DB_ROOT_PASSWORD: 'potassium'
+      RUN_MODE: 'super-secure'
+```
+
+Each block documents required [docker-compose fields](https://docs.balena.io/reference/supervisor/docker-compose/) in its README. Pay attention to privileged and networking settings, and avoid conflicting port bindings.
+
+### Learn more
+
+- [Introducing balenaBlocks](https://www.balena.io/blog/introducing-balenablocks-jumpstart-your-iot-app-development/)
+- [Compose multicontainer fleets](https://www.balena.io/blog/two-projects-one-device-turn-your-raspberry-pi-into-a-multitool/)
+- [IoT Happy Hour walkthrough](https://youtu.be/Mllay6Z2-qQ?t=1440) featuring the [environmental sensor app](https://github.com/balenalabs-incubator/ruuvitag)
+
+## Create your own block
+
+Blocks follow the same fundamentals as any container service. Keep the project in a GitHub repository and include a `balena.yml` file at the root so balenaHub can display metadata:
+
+```yaml title="balena.yml"
+name: browser
+description: >-
+  a hardware accelerated web browser to present internal and external URLs on a
+  connected display
+version: 2.3.2
+type: sw.block
+assets:
+  repository:
+    type: blob.asset
+    data:
+      url: 'https://github.com/balenablocks/browser'
+  logo:
+    type: blob.asset
+    data:
+      url: 'https://raw.githubusercontent.com/balenablocks/browser/master/logo.png'
+data:
+  defaultDeviceType: raspberrypi3
+  supportedDeviceTypes:
+    - raspberrypi4-64
+    - fincm3
+    - raspberrypi3
+    - raspberrypi3-64
+    - raspberrypi400-64
+    - intel-nuc
+    - genericx86-64-ext
+```
+
+Once the repository is ready:
+
+1. Open the **Blocks** tab in the balenaCloud dashboard.
+2. Click **Create block** and fill in the metadata.
+3. Push your first release with [`balena push`](https://docs.balena.io/learn/deploy/deployment/#balena-push).
+
+<Frame>
+<img src="https://docs.balena.io/img/blocks/create-block.webp" alt="Create block modal in the dashboard" width="70%" />
+</Frame>
+
+## Release management
+
+Track, pin, and promote releases directly from the dashboard. By default, blocks **track latest**, so the newest successful build becomes the default image.
+
+<Frame>
+<img src="https://docs.balena.io/img/blocks/release-mgmt.webp" alt="Release management options for a block" width="100%" />
+</Frame>
+
+To ship a new version:
+
+```bash
+balena push <BLOCK_SLUG>
+```
+
+Select a specific release in the dashboard if you want to pin the default image instead of following latest.
+
+## Publish on balenaHub
+
+Keep blocks private while you iterate. When you are ready to share:
+
+1. Add the repository URL under **Settings → Repository URL**.
+2. Toggle **Block visibility** to **On**.
+
+<Frame>
+<img src="https://docs.balena.io/img/blocks/settings.webp" alt="Block visibility toggle" width="100%" />
+</Frame>
+
+Public blocks appear in the [balenaHub Blocks](https://hub.balena.io/blocks) catalog, complete with image references and usage docs.
+
+## Use blocks in other projects
+
+The balenaHub listing provides an image URL you can paste into a Dockerfile or compose file. For example:
+
+```yaml
+services:
+  browser:
+    image: bh.cr/balenablocks/browser-aarch64/2.3.8
+    privileged: true
+    network_mode: host
+```
+
+Notes on versioning:
+
+- `2.3.8` resolves to the most recent revision (for example `2.3.8+rev2`).
+- Draft releases require the full build stamp (`2.4.1-1648554962021`).
+- You can target a specific build by commit hash: `bh.cr/balenablocks/browser-aarch64/11e1ee23d7ddf6ab6da99bac26c9d274`.
+
+<Note>
+The `+` character is reserved in image references, so specify the base version and balena will automatically use the latest revision for that release.
+</Note>
+
+BalenaHub keeps the canonical image reference handy—click **Use** to copy it and drop the block into any fleet.

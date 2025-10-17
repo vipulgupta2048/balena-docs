@@ -1,0 +1,166 @@
+---
+title: "Multiple containers"
+description: "Design, configure, and operate balena fleets that run multiple services with Docker Compose."
+sidebarTitle: "Multiple containers"
+---
+
+## Why go multicontainer?
+
+Splitting an application into services keeps each component focused, easier to test, and simpler to update independently. Each container carries its own runtime and resource limits, so large teams can work in parallel without fighting over dependencies.
+
+<Info>
+Need a deep dive? Watch the [Services masterclass](https://docs.balena.io/learn/more/masterclasses/services-masterclass/) for hands-on scenarios.
+</Info>
+
+## Compose basics
+
+balenaCloud uses the **Docker Compose v2** syntax. The Supervisor implements a subset of the [v2.1 feature set](https://docs.docker.com/compose/compose-file/compose-file-v2/); check the [feature compatibility matrix](https://docs.balena.io/reference/supervisor/docker-compose) for supported fields.
+
+A typical `docker-compose.yml` defines your services and how they collaborate:
+
+```yaml title="docker-compose.yml"
+version: '2'
+services:
+  frontend:
+    build: ./frontend
+    restart: always
+    expose:
+      - "80"
+
+  proxy:
+    build: ./haproxy
+    depends_on:
+      - frontend
+      - data
+    ports:
+      - "80:80"
+
+  data:
+    build: ./data
+    expose:
+      - "8080"
+```
+
+Key points:
+
+- Swap `build:` with `image:` when you want to pull a prebuilt container.
+- Use [`depends_on`](https://docs.docker.com/compose/compose-file/compose-file-v2/#depends_on) for startup order only—restarts are not chained.
+- In balena, services restart automatically when their process exits; override with the `restart` policy if needed.
+
+<Note>
+If a service is expected to exit after completing work, avoid listing it as a dependency or it may block other services from starting.
+</Note>
+
+## Hardware access
+
+Multicontainer services start **without** privileged mode. Grant permissions explicitly:
+
+```yaml
+gpio:
+  build: ./gpio
+  devices:
+    - "/dev/i2c-1:/dev/i2c-1"
+    - "/dev/mem:/dev/mem"
+    - "/dev/ttyACM0:/dev/ttyACM0"
+  cap_add:
+    - SYS_RAWIO
+  restart: on-failure
+```
+
+For fleets that need host networking—Bluetooth, mDNS, or custom protocols—set `network_mode: host`.
+
+## Persistent data with named volumes
+
+Named volumes persist data across releases as long as the name remains stable:
+
+```yaml
+version: '2'
+volumes:
+  resin-data:
+services:
+  example:
+    build: ./example
+    volumes:
+      - 'resin-data:/data'
+```
+
+Devices upgraded from older balenaOS versions automatically map `/data` to the `resin-data` volume so legacy behaviour is preserved. Access volume data via `/var/lib/docker/volumes/<FLEET_ID>_resin-data/_data` on the host OS.
+
+<Warning>
+Bind mounts are not supported unless enabled through specific [feature labels](https://docs.balena.io/learn/develop/multicontainer/#labels).
+</Warning>
+
+## Collecting core dumps
+
+Starting with balenaOS 2.113.31, core dumps are disabled to prevent uncontrolled storage growth. Enable them per service if you need crash diagnostics:
+
+```yaml
+services:
+  example:
+    ulimits:
+      core: -1
+```
+
+Core dumps capture process memory at crash time and can be inspected with tools such as `gdb`.
+
+## Labels that unlock balena features
+
+Define labels in Compose to access Supervisor-specific capabilities without running services as privileged. Common patterns include host mounts, GPU access, and optional service behaviour—see the [labels reference](https://docs.balena.io/reference/supervisor/docker-compose/#labels) for the full catalog.
+
+### Enforce service requirements
+
+Declare minimum Supervisor versions, hardware constraints, or NVIDIA L4T dependencies using requirement labels. The Supervisor validates these before deploying a release.
+
+| Label | Description | Requires Supervisor |
+| --- | --- | --- |
+| `io.balena.features.requires.sw.supervisor` | Minimum Supervisor version (`semver` range) | 10.16.17 |
+| `io.balena.features.requires.sw.l4t` | Minimum [L4T](https://developer.nvidia.com/embedded/linux-tegra) version (`semver` range) | 10.16.17 |
+| `io.balena.features.requires.hw.device-type` | Target device type (`BALENA_MACHINE_NAME`) | 11.1.0 |
+| `io.balena.features.requires.arch.sw` | CPU architecture (`BALENA_ARCH`) | 14.10.11 |
+
+Example:
+
+```yaml
+version: '2'
+services:
+  first-service:
+    build: ./first-service
+    labels:
+      io.balena.features.requires.sw.supervisor: '>=14'
+      io.balena.features.requires.sw.l4t: '>=32.2.0'
+
+  second-service:
+    image: my-second-image
+    labels:
+      io.balena.features.requires.hw.device-type: jetson-nano
+      io.balena.features.requires.arch.sw: aarch64
+```
+
+If any non-optional service fails its requirements, the Supervisor rejects the release and leaves the device running the previous version.
+
+### Optional services
+
+Mark a service as optional so the rest of the release can still deploy even when its requirements are not met:
+
+```yaml
+services:
+  first-service:
+    build: ./first-service
+    labels:
+      io.balena.features.requires.hw.device-type: jetson-nano
+      io.balena.features.optional: '1'
+
+  second-service:
+    build: ./second-service
+```
+
+<Note>
+When an optional service cannot run on the new release, the previous version of that service is stopped before deployment.
+</Note>
+
+## Next steps
+
+- Review the [Supervisor compose reference](https://docs.balena.io/reference/supervisor/docker-compose/).
+- Explore [persistent storage patterns](https://docs.balena.io/learn/develop/runtime/#persistent-storage).
+- Browse the [balena block ecosystem](https://hub.balena.io/blocks) for reusable services.
+``

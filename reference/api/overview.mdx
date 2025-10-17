@@ -1,0 +1,141 @@
+---
+title: "API overview"
+description: "Learn how to authenticate and construct balenaCloud API calls with OData filters, expansions, and paging."
+sidebarTitle: "Overview"
+---
+
+## Why use the API?
+
+The balenaCloud API is the backbone of the platform. The dashboard, CLI, and SDKs all call the same HTTP interface that you can access directly. Use it to read or update fleets, devices, variables, and any other resource tied to your account.
+
+This page introduces versioning, authentication, and core request patterns. The companion [API resources guide](https://docs.balena.io/reference/api/resources/fleet) lists every resource with example queries.
+
+<Warning>
+The API will execute any valid request you send it. Always test filters with a `GET` before using the same filter in a `PATCH` or `DELETE` call to avoid accidental, irreversible changes.
+</Warning>
+
+## Versioning
+
+The current API version is `v7`. Requests sent to older versions (`v1` through `v6`) are translated automatically to the latest schema so existing integrations keep working.
+
+## Authentication
+
+Authenticate every request with either a [session token](/learn/accounts/account#session-tokens) or a [named API key](/learn/accounts/account#api-keys). Include the token in the `Authorization` header:
+
+```http
+Authorization: Bearer <AUTH_TOKEN>
+```
+
+## Build a request
+
+The API follows the Open Data Protocol ([OData](https://www.odata.org/)). Resources such as devices, fleets, and applications are exposed as collections. Choose an HTTP method that matches the action you need:
+
+- `GET` to read data
+- `POST` to create resources
+- `PATCH` to update resources
+- `DELETE` to remove resources
+
+For example, fetch every fleet you can access:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/application" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+### Select specific fields
+
+Use `$select` to limit the fields returned:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/application?\$select=app_name,slug,is_for__device_type" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+### Address a single resource
+
+Append a primary key to the resource name when you know it:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/device(<ID>)" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+Many resources also support alternative keys such as UUIDs:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/device(uuid='<UUID>')" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+Composite identifiers work too—for example, device tags keyed by device and tag name:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/device_tag(device=<DEVICE_ID>,tag_key='<KEY>')" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+### Filter results
+
+When you do not know the identifiers, add `$filter` clauses. This example finds a device by name:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/device?\$filter=name%20eq%20'<DEVICE_NAME>'" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+You can filter across relationships. Find devices that belong to an application identified by slug:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/device?\$filter=belongs_to__application/any(a:a/slug%20eq%20'<APP_SLUG>')" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+Or list applications associated with a specific organization handle:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/application?\$filter=organization/any(o:o/handle%20eq%20'<ORG_HANDLE>')" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+You can even require the authenticated user to have direct access:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/application?\$filter=is_directly_accessible_by__user/any(dau:true)" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+Refer to the [OData operators](https://www.odata.org/getting-started/basic-tutorial/) for more advanced filter syntax.
+
+### Expand related data
+
+Many responses return links to related resources. Use `$expand` to inline those relationships:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/device(uuid='<UUID>')?\$expand=belongs_to__application" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+Combine `$select` and `$expand` to control both the primary resource and the expanded payload:
+
+```bash
+curl -X GET "https://api.balena-cloud.com/v7/application?\$select=app_name,slug&\$expand=is_for__device_type(\$select=id,slug)" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <AUTH_TOKEN>"
+```
+
+## Rate limits
+
+We intentionally do not publish hard rate-limit thresholds. Limits exist to keep the service healthy but are generous enough that most automation never hits them. When you do exceed the limit, the response includes an HTTP `Retry-After` header specifying how long to wait before retrying.
+
+Design your integration to back off when `Retry-After` appears, and you will adapt automatically as we tune the underlying algorithm.
+```}

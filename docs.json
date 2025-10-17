@@ -3,9 +3,9 @@
   "theme": "maple",
   "name": "balena",
   "colors": {
-    "primary": "#018AD7",
-    "light": "#018AD7",
-    "dark": "#018AD7"
+    "primary": "#005A9C",
+    "light": "#1FA7FF",
+    "dark": "#003E73"
   },
   "favicon": "/favicon.svg",
   "appearance": {
@@ -36,7 +36,21 @@
               "learn/welcome/introduction",
               "learn/welcome/primer",
               "learn/welcome/production-plan",
-              "learn/welcome/security",
+              "learn/welcome/security"
+            ]
+          },
+          {
+            "group": "ACCOUNTS",
+            "icon": "users",
+            "pages": [
+              "learn/accounts/account",
+              "learn/accounts/organizations",
+              "learn/accounts/fleet-members",
+              "learn/accounts/billing",
+              "learn/accounts/fleet-types",
+              "learn/accounts/enterprise-sso",
+              "learn/accounts/idp-setup/microsoft-entra-saml-setup",
+              "learn/accounts/idp-setup/google-workspace-saml-setup",
               "learn/accounts/support-access"
             ]
           },
@@ -48,14 +62,40 @@
           {
             "group": "DEVELOP",
             "icon": "microchip",
-            "pages": ["learn/develop/local-mode"]
+            "pages": [
+              "learn/develop/blocks",
+              "learn/develop/apps",
+              "learn/develop/multicontainer",
+              "learn/develop/hardware/index",
+              "learn/develop/dockerfile",
+              "learn/develop/runtime",
+              "learn/develop/local-mode"
+            ]
           },
           {
             "group": "DEPLOY",
             "icon": "code-merge",
             "pages": [
               "learn/deploy/deployment",
-              "learn/deploy/release-strategy/release-policy"
+              "learn/deploy/deploy-with-balena-button",
+              "learn/deploy/delta",
+              "learn/deploy/build-optimization",
+              "learn/deploy/release-strategy/release-policy",
+              "learn/deploy/release-strategy/update-strategies",
+              "learn/deploy/release-strategy/update-locking"
+            ]
+          },
+          {
+            "group": "MANAGE",
+            "icon": "sliders",
+            "pages": [
+              "learn/manage/actions",
+              "learn/manage/configuration",
+              "learn/manage/device-logs",
+              "learn/manage/device-statuses",
+              "learn/manage/filters-tags",
+              "learn/manage/ssh-access",
+              "learn/manage/variables"
             ]
           }
         ]
@@ -71,7 +111,10 @@
           {
             "group": "Troubleshooting",
             "icon": "screwdriver-wrench",
-            "pages": ["faq/troubleshooting/raspberrypi5"]
+            "pages": [
+              "faq/troubleshooting/index",
+              "faq/troubleshooting/raspberrypi5"
+            ]
           },
           {
             "group": "Accessing a Device using a Gateway Device",
@@ -97,6 +140,13 @@
             ]
           },
           {
+            "group": "API",
+            "icon": "code",
+            "pages": [
+              "reference/api/overview"
+            ]
+          },
+          {
             "group": "Host OS",
             "icon": "wifi",
             "pages": [
@@ -105,9 +155,39 @@
             ]
           },
           {
+            "group": "Base images",
+            "icon": "cube",
+            "pages": [
+              "reference/base-images/overview"
+            ]
+          },
+          {
             "group": "Device supervisor",
             "icon": "circle-user",
             "pages": ["reference/supervisor/device-metrics"]
+          },
+          {
+            "group": "Diagnostics",
+            "icon": "activity",
+            "pages": [
+              "reference/diagnostics/index"
+            ]
+          },
+          {
+            "group": "SDKs",
+            "icon": "code-branch",
+            "pages": [
+              "reference/sdk/node-sdk",
+              "reference/sdk/python-sdk",
+              "reference/sdk/deprecation-policy"
+            ]
+          },
+          {
+            "group": "Command line",
+            "icon": "terminal",
+            "pages": [
+              "reference/balena-cli/index"
+            ]
           }
         ]
       }

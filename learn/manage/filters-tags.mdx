@@ -1,0 +1,82 @@
+---
+title: "Filters and tags"
+description: "Organize fleets with saved views and device tags in the balenaCloud dashboard."
+sidebarTitle: "Filters & tags"
+---
+
+## Overview
+
+Large fleets quickly fill the device list. Filters help you narrow the list in seconds, while tags let you attach key:value metadata that can drive workflows, saved views, and searches.
+
+## Filter devices
+
+Click **Add filter** on a fleet page to open the filter builder.
+
+![Add filter dialog](https://docs.balena.io/img/common/app/add-filter.webp)
+
+1. Choose a column to filter (matching the device table headers).
+2. Pick a comparison operator such as `is`, `contains`, or `matches RegEx`.
+3. Set the value to match.
+
+<Note>
+When filtering by [device tags](#tag-devices), you can match on tag name, value, or both.
+</Note>
+
+Selected filters appear above the device table; click a filter to edit it or the **x** icon to remove it. Add as many filters as you need; results show devices that match all active filters.
+
+![Filter applied](https://docs.balena.io/img/common/app/filter-applied.webp)
+
+## Save reusable views
+
+Need the same filter set later? Configure the filters once, then choose **Save view**.
+
+![Save view](https://docs.balena.io/img/common/app/save-view.webp)
+
+Name the view and access it anytime from the **Views** dropdown above the filter bar.
+
+## Tag devices
+
+Tags extend device metadata with custom key:value pairs that you can filter on or use in scripts.
+
+### Create and manage tags
+
+1. Select one or more devices, then click **Tags** in the toolbar.
+2. Alternatively, navigate to a device summary page and choose **Manage Tags** from the actions menu.
+
+![Apply tags from device list](https://docs.balena.io/img/common/app/tags.webp)
+
+![Manage tags from device summary](https://docs.balena.io/img/common/app/device_manage_tags.webp)
+
+Define the tag name and optional value in the tag dialog.
+
+![Add tag dialog](https://docs.balena.io/img/common/app/add_tag.webp)
+
+<Warning>
+Tag names must be unique per device, cannot contain spaces, and must avoid the reserved `io.balena` prefix.
+</Warning>
+
+Tags appear in a list where you can edit or remove them. Click **Apply** to confirm changes.
+
+![Tag list](https://docs.balena.io/img/common/app/tag_list.webp)
+
+<Info>
+Automate tagging through the API—see the [device tag examples](https://github.com/balena-io-playground/device-tags).
+</Info>
+
+## Show tag columns
+
+After tags exist, an **All Tags** column appears on the right side of the device table.
+
+![All tags column](https://docs.balena.io/img/common/app/all_tags.webp)
+
+Use **Add Tag Column** to pin an individual tag as its own column.
+
+![Add tag column](https://docs.balena.io/img/common/app/add_tag_column.webp)
+
+Choose the tag to display in the new column.
+
+![Select tag column](https://docs.balena.io/img/common/app/tag_column.webp)
+
+<Note>
+Hide tag columns by using the arrow control on the far-right side of the device table header.
+</Note>

@@ -1,0 +1,34 @@
+---
+title: "Fleet types"
+description: "Understand legacy balenaCloud fleet types and how to convert to Microservices."
+sidebarTitle: "Fleet types"
+---
+
+## Overview
+
+All new fleets in balenaCloud use the Microservices type, which supports [multicontainer deployments](/learn/develop/multicontainer) and features such as [public device URLs](/learn/manage/actions/#public-device-url). Older accounts may still run Essentials, Classic, or Legacy fleets—this guide explains the differences and how to upgrade.
+
+<Info>
+Since March 2023, balena no longer creates new Essentials, Classic, or Legacy fleets. Existing fleets continue to operate, and you can still provision devices to them.
+</Info>
+
+## Legacy fleet types
+
+Essentials, Classic, and Legacy fleets run a single container per device and do not support public device URLs.
+
+- **Essentials**: Single-container fleet with limited features.
+- **Classic**: Supports balenaOS v2.0.3 and newer, using Docker Registry v2.
+- **Legacy**: Supports earlier balenaOS versions and uses the deprecated Registry v1.
+
+All Microservices and Essentials fleets require balenaOS v2.12.0 or later. If a device type does not yet offer that version, new fleets default to Classic.
+
+## Convert to Microservices
+
+To upgrade an existing fleet:
+
+1. Ensure every device in the fleet runs a balenaOS version that meets Microservices requirements. [Update devices](/reference/OS/updates/self-service) if needed.
+2. Open the fleet summary page.
+3. Click **Settings** and locate **Fleet type**.
+4. Choose **Microservices** from the dropdown.
+
+balenaCloud disables fleet types that are incompatible with your devices, so if Microservices is unavailable, update the remaining devices first.

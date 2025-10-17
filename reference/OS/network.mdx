@@ -1,23 +1,175 @@
 ---
 title: "Networking on balenaOS"
-description: "Guide to Wi-Fi, Ethernet, VPN, and advanced networking on balenaOS"
+description: "Configure Wi-Fi, Ethernet, cellular, and hotspot connections using NetworkManager profiles on the balenaOS host."
 sidebarTitle: "Networking"
 ---
 
-## Introduction
+# Networking on balenaOS
 
-balenaOS uses **NetworkManager** (with **ModemManager**) for flexible connectivity—ethernet, Wi-Fi, and cellular.
+balenaOS uses [NetworkManager](https://networkmanager.dev/) (with ModemManager for cellular) to configure every interface at boot. Connection profiles live in the boot partition under `/mnt/boot/system-connections/`. Each profile is an INI file that describes a single connection; the Supervisor copies these files into NetworkManager’s runtime directory during boot.
 
-Configure connections via files in the boot partition under `/system-connections`.
+:::info Location matters
+Always edit files under `/mnt/boot/system-connections/` (or the mounted `resin-boot` partition before first boot). Editing `/etc/NetworkManager/system-connections/` directly is unsupported because the bind-mounted overlay is regenerated on reboot.
+:::
 
-## Wi-Fi Setup
+## Wi-Fi profiles
 
-If you added Wi-Fi when flashing, you’ll find a `resin-wifi` file:
+Create a file such as `/mnt/boot/system-connections/balena-wifi` with:
 
 ```ini
 [connection]
 id=balena-wifi
 type=wifi
+
+[wifi]
+ssid=My Network
+mode=infrastructure
+hidden=true
+
+[wifi-security]
+key-mgmt=wpa-psk
+psk=super_secret_wifi_password
+
+[ipv4]
+method=auto
+
+[ipv6]
+method=auto
+```
+
+Add more Wi-Fi credentials by duplicating the file and adjusting `ssid`, `psk`, and optionally `autoconnect-priority`. Remove the `[wifi-security]` block for open networks. WPA2-Enterprise networks require an `[802-1x]` section—see the [NetworkManager 802.1X settings reference](https://networkmanager.dev/docs/api/latest/nm-settings-nmcli.html#settings-802-1X) for field names.
+
+To prefer Wi-Fi over Ethernet, create an Ethernet profile that sets `never-default=true` and increases `route-metric`:
+
+```ini
+[connection]
+id=ethernet-secondary
+type=ethernet
+interface-name=eth0
+
+[ipv4]
+method=auto
+never-default=true
+route-metric=2000
+ignore-auto-routes=true
+
+[ipv6]
+method=auto
+```
+
+## Ethernet and static IPs
+
+Ethernet works out of the box. To assign a static IP, specify `address1`, `dns`, and use `method=manual`:
+
+```ini
+[connection]
+id=ethernet-static
+type=ethernet
+interface-name=eth0
+
+[ipv4]
+method=manual
+address1=192.168.1.111/24,192.168.1.1
+dns=8.8.8.8;8.8.4.4;
+
+[ipv6]
+method=auto
+```
+
+## Hotspot mode
+
+Turn the device into an access point by creating a profile that sets `mode=ap` and `method=shared`:
+
+```ini
+[connection]
+id=balena-hotspot
+type=wifi
+autoconnect=true
+interface-name=wlan0
+
+[wifi]
+mode=ap
+band=bg
+ssid=MyBalenaHotspot
+
+[wifi-security]
+key-mgmt=wpa-psk
+psk=setup-password
+
+[ipv4]
+method=shared
+
+[ipv6]
+method=auto
+```
+
+`method=shared` enables NetworkManager’s built-in DHCP and NAT, defaulting to subnet `10.42.x.0/24`. Override it by adding `address1=192.168.4.1/24`.
+
+## Cellular modems
+
+balena ships ModemManager support. Create `/mnt/boot/system-connections/cellular` and configure the APN and dial-in number:
+
+```ini
+[connection]
+id=cellular
+type=gsm
+autoconnect=true
+
+[gsm]
+apn=internet
+number=*99#
+username=myuser
+password=mypass
+
+[serial]
+baud=115200
+
+[ipv4]
+method=auto
+
+[ipv6]
+method=auto
+```
+
+Check the [modem compatibility notes](/reference/hardware/wifi-dongles) for hardware guidance. For advanced fields (PIN, band locking) consult the [NetworkManager GSM settings documentation](https://networkmanager.dev/docs/api/latest/nm-settings-nmcli.html#settings-gsm).
+
+## Regulatory domain
+
+Set the Wi-Fi country code so the device can use region-specific channels. Add the `country` field to `config.json`:
+
+```json
+"country": "GB"
+```
+
+The Supervisor applies the change on reboot.
+
+## Runtime configuration changes
+
+Deploy [balena WiFi Connect](https://github.com/balena-io-projects/wifi-connect) to present a captive portal when SSIDs or credentials are unknown. For custom workflows, use NetworkManager’s D-Bus API from containers. Export `DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket` so your application talks to the host bus.
+
+## Network requirements and proxies
+
+Allow outbound connections to:
+
+- `*.balena-cloud.com` over HTTPS for API, VPN, and registry access
+- `*.docker.com` and `registry-1.docker.io` for container pulls
+- DNS/NTP endpoints specified in `config.json`
+
+Behind corporate proxies configure the [`proxy` block in config.json](https://github.com/balena-os/meta-balena/blob/master/docs/pages/configuration/config-json.md#proxy-configuration) or set `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` for your services and Supervisor.
+
+## Connectivity diagnostics
+
+The dashboard **Diagnostics** tab runs automated checks (DNS, registry, VPN, balenaCloud API). Investigate failures via `/var/log/journal/` or `/mnt/data/balenahup/` during OS updates. `nmcli dev status` quickly confirms link state and active profiles on the host.
+
+## Disable IPv6
+
+If needed, set `BALENA_HOST_CONFIG_disable_ipv6=1` in the Configuration tab or add `disable_ipv6=1` to the `[ipv6]` section of a connection profile. Refer to the [host OS networking guide](https://www.balena.io/docs/reference/OS/network/2.x/#disable-ipv6) for trade-offs.
+
+## Troubleshooting tips
+
+- Connection files must have permissions `600`; otherwise NetworkManager ignores them.
+- Confirm interface names with `ip link`—many device types use `enx…` instead of `eth0`.
+- For WPA Enterprise or certificate-based auth, copy certificates alongside the profile and reference them by absolute path (e.g. `/etc/NetworkManager/system-connections/ca.pem`).
 
 [wifi]
 ssid=MySSID

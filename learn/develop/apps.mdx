@@ -1,0 +1,144 @@
+---
+title: "Apps"
+description: "Package multi-service functionality that you can share across fleets or publish to the balena community."
+sidebarTitle: "Apps"
+---
+
+## Overview
+
+Apps bundle multiple services into a reusable unit that can be deployed to any balena fleet. They are ideal when you want to share turnkey functionality—either privately within an organization or publicly via balenaHub.
+
+<Warning>
+Apps are currently an experimental feature. Enable them under **Preferences → Experimental Options → Display Apps** in the balenaCloud dashboard.
+</Warning>
+
+Apps can stand alone or incorporate [blocks](https://docs.balena.io/learn/develop/blocks). Publish them to [balenaHub](https://hub.balena.io) so any fleet owner can deploy your work, or keep them private for internal reuse.
+
+## Why build an App?
+
+- Deliver a complete, multi-container solution that deploys without extra wiring.
+- Reuse the same functionality across fleets you own or manage for others.
+- Share community projects—such as [balenaSense](https://github.com/balenalabs/balena-sense), built from the [dashboard](https://github.com/balenablocks/dashboard) and [connector](https://github.com/balenablocks/connector) blocks—through balenaHub.
+
+## Create an App
+
+1. Store your project in a **public GitHub repository** (private repositories are not yet supported).
+2. Add a `balena.yml` file in the repo root to describe metadata, variables, supported device types, and assets.
+3. In the balenaCloud dashboard, open the **Apps** tab and choose **Create App**.
+4. Complete the creation modal, then push your first release using familiar workflows like [`balena push`](https://docs.balena.io/learn/deploy/deployment/).
+
+Example `balena.yml` from [balenaDash](https://github.com/balenalabs/balena-dash):
+
+```yaml title="balena.yml"
+name: balenaDash
+description: >-
+  Raspberry Pi-powered digital signage or website viewer, remotely accessible
+  from anywhere.
+type: sw.application
+assets:
+  repository:
+    type: blob.asset
+    data:
+      url: 'https://github.com/balenalabs/balena-dash'
+  logo:
+    type: blob.asset
+    data:
+      url: >-
+        https://raw.githubusercontent.com/balenalabs/balena-dash/master/assets/logo.png
+data:
+  applicationConfigVariables:
+    - BALENA_HOST_CONFIG_gpu_mem: 128
+    - BALENA_HOST_CONFIG_dtoverlay: "vc4-fkms-v3d"
+  applicationEnvironmentVariables:
+    - SHOW_CURSOR: 0
+    - CONTROL_TV: 0
+    - ENABLE_GPU: 0
+    - KIOSK: 1
+    - PERSISTENT: 1
+    - PORTAL_SSID: balenaDash
+    - PORTAL_PASSPHRASE: balenaDash
+    - ACTIVITY_TIMEOUT: 600
+    - LAUNCH_URL: ''
+    - ROTATE_DISPLAY: normal
+    - WINDOW_POSITION: '0,0'
+    - LOCAL_HTTP_DELAY: 0
+    - FBCP_DISPLAY: ''
+  defaultDeviceType: raspberrypi4-64
+  supportedDeviceTypes:
+    - raspberrypi4-64
+    - fincm3
+    - raspberrypi3
+    - raspberrypi3-64
+    - intel-nuc
+    - genericx86-64-ext
+    - raspberrypi400-64
+version: 2.0.0
+```
+
+## Publish on balenaHub
+
+By default Apps remain private to your organization. When you are ready to share:
+
+<Frame>
+[![Enable App visibility on balenaHub](https://docs.balena.io/img/common/app/visibility-toggle.webp)](https://docs.balena.io/img/common/app/visibility-toggle.webp)
+</Frame>
+
+1. In the App **Settings** view, add the GitHub repository URL.
+2. Toggle **App visibility** to make it public on balenaHub.
+3. Toggle visibility off at any time if you need to withdraw the listing.
+
+Public Apps appear in balenaHub search and can be deployed directly into another user’s fleet.
+
+## Deploy an App from balenaHub
+
+<Frame>
+[![Deploy an App from balenaHub](https://docs.balena.io/img/common/app/deploy-from-balenahub.webp)](https://docs.balena.io/img/common/app/deploy-from-balenahub.webp)
+</Frame>
+
+When someone clicks **Deploy** on balenaHub:
+
+1. balenaCloud prompts them to sign in (or create an account) and select a target fleet.
+2. The balena builders fetch the latest code from the repository listed in `balena.yml`.
+3. A fresh release is created for the chosen fleet using the [Deploy with balena button](https://docs.balena.io/learn/deploy/deploy-with-balena-button/) workflow.
+
+## Manage support access
+
+If balena support needs to investigate an App, enable temporary access in **Settings → Support access**. The toggle automatically reverts to **Off** once the requested window expires.
+
+<Frame>
+[![Enable support access](https://docs.balena.io/img/common/app/enable-support-access.webp)](https://docs.balena.io/img/common/app/enable-support-access.webp)
+</Frame>
+
+## Release management
+
+Use the balena CLI to push new releases:
+
+```bash
+balena push <APP_SLUG>
+```
+
+The **Releases** tab lists build history. You can also pin an App to a specific release so balenaHub shows that version as the public build, even though hub deployments always fetch the latest commit from GitHub.
+
+## Transfer App ownership
+
+Transfer an App—and all its members and releases—between organizations when needed:
+
+1. Confirm the **target organization** has an empty App with the same name.
+2. Ask a target organization admin to add you as a **Developer** on that App (skip this if you are already an admin there).
+3. In the source organization, go to **Settings → Set App ownership** and choose the new organization.
+
+<Info>
+If the destination dropdown is disabled, double-check that the target organization created an App with the exact same name and that you have access as a member.
+</Info>
+
+After transfer, the original owner is removed from the App; invite them back if they still need access. All other members retain their roles.
+
+## Roadmap
+
+Apps today enable public sharing via balenaHub. Future milestones include:
+
+- Private Apps on private fleets.
+- Automatic updates between App versions.
+- Installing multiple Apps onto a single fleet.
+
+Follow the [balena blog](https://www.balena.io/blog) for feature announcements.

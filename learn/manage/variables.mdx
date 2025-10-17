@@ -1,0 +1,70 @@
+---
+title: "Variables"
+description: "Configure fleet and device environment variables in balenaCloud without changing source code."
+sidebarTitle: "Variables"
+---
+
+## Overview
+
+Variables expose runtime configuration to your services without rebuilding images. Define variables in the dashboard, API, CLI, or SDK and balenaCloud injects them as environment variables inside the targeted services.
+
+![Accessing variable](https://docs.balena.io/img/variables/accessing_variables.webp)
+
+<Note>
+Dashboard-defined variables do not apply while a device runs in [local mode](/learn/develop/local-mode).
+</Note>
+
+## Precedence and scope
+
+Variables can target the entire fleet, a specific device, or an individual service. When the same variable name exists in multiple scopes, precedence is:
+
+1. **Device + service**
+2. **Device (all services)**
+3. **Fleet + service**
+4. **Fleet (all services)**
+
+Changing a fleet-wide variable for all services restarts every service in the fleet. Changing a variable scoped to a particular service only restarts that service.
+
+<Info>
+Values can be up to 1 MB each. Devices re-download variables whenever the API state changes, which can increase [Supervisor bandwidth usage](/reference/supervisor/bandwidth-reduction/#side-effects--warnings). Tune the polling interval with `BALENA_SUPERVISOR_POLL_INTERVAL`.
+</Info>
+
+## Manage fleet variables
+
+1. Open a fleet and select the **Variables** tab.
+2. Click **Add variable**.
+3. Choose **All services** or a specific service, then set the name and value.
+
+![Add fleet variable](https://docs.balena.io/img/variables/add_fleet_variable.webp)
+
+The variable appears in the list where you can edit or delete it.
+
+![Fleet variable list](https://docs.balena.io/img/variables/variable_list.webp)
+
+<Info>
+Deleting a fleet variable does not remove device-level overrides with the same name.
+</Info>
+
+If a device already defines the same variable, the override appears beneath the fleet entry. Promote the device value to the fleet with **Define fleet-wide**.
+
+![Define device variable fleet-wide](https://docs.balena.io/img/variables/define_app_wide.webp)
+
+## Manage device variables
+
+Device variables apply to a single device and override fleet values.
+
+1. Open the device summary page and choose **Device Variables**.
+2. Click **Add variable**, pick the service scope, then provide the name and value.
+3. Use **override** to change the value of a fleet variable for that device only.
+
+![Device variables](https://docs.balena.io/img/variables/device_variables.webp)
+
+![Override device variable](https://docs.balena.io/img/variables/override.webp)
+
+## Automate with CLI and SDKs
+
+Manage variables programmatically with the balena tooling:
+
+- [`balena env` commands](https://docs.balena.io/tools/cli/#envs)
+- [Node.js SDK environment API](/reference/sdk/node-sdk/#balena.models.fleet.envVar)
+- [Python SDK environment API](/reference/sdk/python-sdk/#environmentvariable)

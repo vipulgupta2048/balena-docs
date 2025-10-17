@@ -1,0 +1,67 @@
+---
+title: "Device logs"
+description: "Debug balena devices with live dashboard logs, persistent journaling, and streaming integrations."
+sidebarTitle: "Device logs"
+---
+
+## Overview
+
+balenaCloud streams anything your services write to `stdout` or `stderr`, along with selected system logs, into the dashboard. Use these logs for short-term debugging and to download the latest 1000 lines of history when troubleshooting.
+
+![Dashboard Logs](https://docs.balena.io/img/common/main_dashboard/device_logs.webp)
+
+<Info>
+Device logs shown in the dashboard are capped at 1000 lines. The API also exposes the same 1000-line buffer for download.
+</Info>
+
+## Work in the dashboard
+
+The **Logs** panel lets you filter, search, clear, and download logs while aligning timestamps to your browser timezone (or UTC).
+
+<Note>
+Device logging is designed for troubleshooting, not archival storage. We plan to expand the feature set to support long-term retention and search in the future.
+</Note>
+
+## Enable persistent logging
+
+System journals reset after every reboot unless you enable persistent logging. Turning it on stores logs under `/var/log/journal/<machine-id>` on the data partition so you can inspect what happened before a reboot or crash.
+
+1. Open the **Configuration** tab for a fleet or device.
+2. Activate **Persistent logging**.
+3. Allow the device to reboot so the Supervisor can apply the change.
+
+<Warning>
+Persistent logging increases writes to the storage medium. Use it when you need additional diagnostics, then disable it once you finish debugging.
+</Warning>
+
+Read the journals directly on the device with `journalctl`:
+
+```bash
+cd /var/log/journal/$(cat /etc/machine-id)
+journalctl -a --file system.journal
+```
+
+Example output:
+
+```console
+-- Logs begin at Mon 2020-01-13 11:05:06 UTC, end at Mon 2020-01-13 11:05:37 UTC. --
+Jan 13 11:05:06 dee2945 systemd-journald[490]: Time spent on flushing to /var is 65.151ms for 795 entries.
+Jan 13 11:05:06 dee2945 systemd-journald[490]: System journal (.../system.journal) is 2.0M, max 8.0M, 5.9M free.
+Jan 13 11:05:07 dee2945 resin-persistent-logs[670]: resin-persistent-logs: Persistent logging activated.
+```
+
+## Increase persistent storage temporarily
+
+You can raise the persistent log limit (default 32 MB) by editing `/etc/systemd/journald.conf.d/journald-balena-os.conf` and adjusting the `SystemMaxUse=` setting. Refer to the [systemd journald documentation](https://www.freedesktop.org/software/systemd/man/journald.conf.html) for valid values.
+
+<Warning>
+Changing `journald-balena-os.conf` is a temporary measure for debugging. balenaOS updates overwrite the file, and incorrect settings can prevent logging entirely. Test changes on development devices first.
+</Warning>
+
+## Stream logs for long-term storage
+
+For archival logging or external analysis, stream logs off the device instead of relying on persistent storage. The [Supervisor journald endpoint](/reference/supervisor/supervisor-api/#journald-logs) exposes live logs that you can forward to tools such as [Datadog](https://www.balena.io/blog/iot-fleet-monitoring-with-datadog-and-balenacloud-how-small-agent-containers-make-a-big-impact/), Splunk, or any preferred observability platform.
+
+<Info>
+Offloading logs reduces wear on SD cards and eMMC devices because the data is transmitted instead of written repeatedly to local storage.
+</Info>

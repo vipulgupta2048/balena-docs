@@ -1,0 +1,95 @@
+---
+title: Advanced boot settings
+description: Unlock additional hardware features on balenaOS devices by customising boot configuration safely.
+sidebarTitle: Advanced boot settings
+---
+
+# Advanced boot settings
+
+:::warning
+These controls expose low-level hardware features. Test every change in a staging environment before rolling it out to production fleets, and keep rescue media handy in case a device becomes unbootable.
+:::
+
+## Raspberry Pi
+
+Raspberry Pi boards expose boot configuration through the [`config.txt`](https://www.raspberrypi.com/documentation/computers/config_txt.html) file stored on the boot partition. You can edit the file manually before first boot or manage it remotely through the balenaCloud dashboard after provisioning. The file lives at `/mnt/boot/config.txt` on a running device.
+
+View the file over SSH:
+
+```sh
+balena ssh <device-uuid>
+cat /mnt/boot/config.txt
+```
+
+### Editing before provisioning
+
+Flash the OS image, mount the SD card partition labelled `resin-boot`, and edit `config.txt` directly. When the device first boots, balenaOS copies any custom keys to the balenaCloud API so they appear in the dashboard. Subsequent manual edits on disk will be overwritten by the Supervisor, so make pre-provisioning edits only once.
+
+### Editing after provisioning
+
+Use the **Configuration** tab on the balenaCloud fleet or device page to manage [`BALENA_HOST_CONFIG_*` variables](/learn/manage/configuration). Each variable maps to an entry within `config.txt`, and the Supervisor reboots the device automatically when changes apply.
+
+For example, setting `BALENA_HOST_CONFIG_start_x=1` results in `start_x=1` in `config.txt`.
+
+## GPU memory
+
+Adjust GPU memory allocation by setting `gpu_mem` keys. Higher values increase graphics performance at the cost of RAM available to containers.
+
+```text
+gpu_mem=16
+gpu_mem_256=64
+gpu_mem_512=128
+gpu_mem_1024=256
+```
+
+The default is 16 MB. Values above 512 MB are not recommended by the Raspberry Pi Foundation.
+
+## Serial interface (UART)
+
+On Raspberry Pi 3 and later, the Bluetooth chip uses the PL011 UART and the mini UART is exposed on GPIO pins 8 and 10 as `/dev/ttyS0`. Enable it in `config.txt` (or via configuration variables) to use the serial console on production images:
+
+```text
+enable_uart=1
+```
+
+Development images ship with the console enabled by default. Refer to the [Raspberry Pi UART documentation](https://www.raspberrypi.com/documentation/computers/configuration.html#configuring-uarts) for overlay options.
+
+## Device tree overlays and parameters
+
+Use `BALENA_HOST_CONFIG_dtoverlay` and `BALENA_HOST_CONFIG_dtparam` to load device tree overlays or tweak parameters. Provide a comma-separated list of quoted entries so the Supervisor can expand them into multiple lines within `config.txt`.
+
+Example balenaCloud variables:
+
+```text
+BALENA_HOST_CONFIG_dtparam="i2c_arm=on","spi=on","audio=on"
+BALENA_HOST_CONFIG_dtoverlay="i2c-rtc,ds1307","lirc-rpi"
+```
+
+These become:
+
+```text
+dtparam=i2c_arm=on
+dtparam=spi=on
+dtparam=audio=on
+dtoverlay=i2c-rtc
+dtparam=ds1307
+dtoverlay=lirc-rpi
+```
+
+Supervisor v16+ automatically splits parameters onto separate lines to avoid the 80-character limit enforced by `config.txt`.
+
+Provide unquoted values if you need to send the exact raw string:
+
+```text
+BALENA_HOST_CONFIG_dtoverlay=i2c-rtc,ds1307
+```
+
+## Disable the rainbow splash screen
+
+Add the following to suppress the Raspberry Pi firmware splash screen during boot:
+
+```text
+disable_splash=1
+```
+
+This does not modify the balena-branded splash screen. Replace that image through the [fleet or device configuration page](/learn/manage/configuration#overriding-the-splash-screen).

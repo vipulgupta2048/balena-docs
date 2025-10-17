@@ -1,0 +1,93 @@
+# Node.js SDK
+
+The balena Node.js SDK lets you manage fleets, devices, releases, and configuration directly from Node.js or the browser. It powers the balenaCloud dashboard and most tooling that integrates with the balenaCloud API.
+
+## Installation
+
+Install from npm and save to your project:
+
+```sh
+npm install --save balena-sdk
+```
+
+:::tip Browser bundles
+When bundling for the browser with tools like webpack or Vite, exclude Node-specific modules such as `fs`, `path`, `node-localstorage`, and `balena-settings-client` to keep the bundle lightweight.
+:::
+
+If you package applications with [`pkg`](https://github.com/vercel/pkg), add the following stanza to include the balena SDK assets:
+
+```json
+{
+  "pkg": {
+    "scripts": [
+      "node_modules/balena-sdk/**/*.js"
+    ],
+    "assets": [
+      "node_modules/pinejs-client-core/**/*"
+    ]
+  }
+}
+```
+
+## Creating an SDK instance
+
+```ts
+import { getSdk } from 'balena-sdk';
+
+const balena = getSdk({
+  apiUrl: 'https://api.balena-cloud.com/',
+  builderUrl: 'https://builder.balena-cloud.com/',
+  dataDirectory: '/opt/local/balena'
+});
+```
+
+Use `setSharedOptions()` at application start if you need shared configuration, then call `fromSharedOptions()` whenever you need a new client instance.
+
+## Authentication
+
+Many operations require a balenaCloud session. Log in via the CLI and reuse the session token, or authenticate programmatically:
+
+```ts
+await balena.auth.login({ email: 'alice@example.com', password: 's3cret' });
+const whoami = await balena.auth.whoami();
+```
+
+The SDK respects the `BALENARC_PROXY` and `BALENARC_NO_PROXY` environment variables, so corporate proxy settings carry over from the CLI.
+
+## Working with fleets and devices
+
+```ts
+const fleets = await balena.models.application.getAll({ $select: ['id', 'app_name'] });
+const devices = await balena.models.device.getAllByApplication(fleets[0].id, {
+  $select: ['device_name', 'is_online']
+});
+
+if (!(await balena.models.device.isOnline(devices[0].id))) {
+  await balena.models.device.reboot(devices[0].id);
+}
+```
+
+Common models include:
+
+- `models.application` for fleets, invitations, tags, and release targeting.
+- `models.device` for device lifecycle, service control, Supervisor state, and metrics.
+- `models.os` for downloading images and assessing update compatibility.
+- `models.release` for managing build output, assets, and tags.
+
+Each model method supports the [PineJS](https://github.com/balena-io/pinejs) query syntax (`$select`, `$filter`, etc.) used across the balena API.
+
+## Handling rate limits
+
+Set `retryRateLimitedRequests` to automatically respect 429 responses that include a `Retry-After` header:
+
+```ts
+const balena = getSdk({ retryRateLimitedRequests: true });
+```
+
+For more advanced control, provide a callback that receives the retry delay and returns `true` or `false`.
+
+## Debugging and support
+
+- Interact with the SDK directly in the browser by opening the developer console on the [balenaCloud dashboard](https://dashboard.balena-cloud.com/); `balenaSDK` is already initialised.
+- File issues and browse examples in the [balena-sdk GitHub repository](https://github.com/balena-io/balena-sdk).
+- Review the full generated API reference for the latest tagged release at [balena-sdk.readme.io](https://balena-sdk.readme.io/).

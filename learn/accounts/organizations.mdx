@@ -1,0 +1,88 @@
+---
+title: "Organization management"
+description: "Create balenaCloud organizations, manage roles and teams, and control access to fleets."
+sidebarTitle: "Organizations"
+---
+
+## Overview
+
+Organizations group members, teams, fleets, and billing under a single umbrella. Administrators manage access, plan subscriptions, and shared resources, while members receive scoped access to the fleets they need.
+
+<Info>
+Every balenaCloud user automatically owns a personal organization named after their username. It behaves like any other organization but cannot be deleted.
+</Info>
+
+## What you can do with organizations
+
+- Invite users and assign roles.
+- Create teams and grant access to fleets in bulk.
+- Manage billing per organization.
+- Move fleets between organizations or share them with collaborators.
+
+## Create an organization
+
+1. In the dashboard sidebar, open **Organizations**.
+2. Click **Create organization**.
+3. Enter a name and confirm. You become the first administrator automatically.
+
+![Create organization](https://docs.balena.io/img/common/app/create_organization.webp)
+
+Administrators can delete organizations they manage. Any member can leave an organization via the organization summary page.
+
+## Roles and access
+
+Organizations offer two roles:
+
+- **Administrator** - Full control over members, teams, fleets, billing, and subscriptions.
+- **Member** - Read access to the organization plus any fleets or teams explicitly granted.
+
+### Invite members
+
+1. Open the organization and click **Manage members**.
+2. Choose **Invite member**.
+3. Enter the user's email or balena username and assign a role.
+
+![Invite organization member](https://docs.balena.io/img/common/app/invite_org_member.webp)
+
+To change roles later, select the member, choose **Actions → Change membership**, and pick the desired role.
+
+![Change member role](https://docs.balena.io/img/common/app/modify_org_roles.webp)
+
+## Create teams
+
+Teams group members so you can assign fleet access collectively.
+
+1. Open the **Teams** tab and click **Create team**.
+2. Name the team and confirm.
+3. Use **Manage members** and **Manage fleets** to add people and grant access.
+
+![Team summary](https://docs.balena.io/img/common/app/org_team_summary.webp)
+
+## Create fleets within an organization
+
+Within the organization, open the **Fleets** tab and click **Create fleet**. Follow the standard fleet creation workflow (see the [Getting started guide](/learn/getting-started)).
+
+![Create fleet under organization](https://docs.balena.io/img/common/app/create_app_under_org.webp)
+
+### Move existing fleets
+
+To move a fleet into another organization, transfer ownership from the fleet's **Settings** page. See [Transfer fleet ownership](/learn/manage/actions/#transfer-fleet-ownership) for details.
+
+![Transfer ownership](https://docs.balena.io/img/common/app/transfer_ownership.webp)
+
+## Grant fleet access
+
+Assign fleet roles to individuals or teams:
+
+- **Individual members**: Open the member's profile, click **Manage fleets**, then **Add to fleets** and choose the role (Developer, Operator, Observer).
+- **Teams**: From the team summary, click **Manage fleets** followed by **Add fleets to team** to assign roles for each fleet.
+
+![Grant team access](https://docs.balena.io/img/common/app/application_access_to_team.webp)
+
+To revoke access, return to **Manage fleets**, select the relevant fleets, and choose **Remove access**.
+
+![Remove fleet access](https://docs.balena.io/img/common/app/remove_access_applications.webp)
+
+## Collaborate on a single fleet
+
+If you only need to share one fleet, invite users directly as [fleet members](/learn/accounts/fleet-members). balenaCloud automatically adds them to the owning organization with the appropriate access levels.

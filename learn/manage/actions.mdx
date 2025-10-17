@@ -1,0 +1,180 @@
+---
+title: "Actions and settings"
+description: "Control fleets, devices, and releases in balenaCloud with the dashboard's actions and settings."
+sidebarTitle: "Actions & settings"
+---
+
+## Overview
+
+Use actions and settings to change how your fleets and individual devices behave at runtime. The dashboard offers three entry points:
+
+- **Fleet Settings tab**: apply configuration that affects every device in the fleet.
+- **Device actions or settings menu**: operate on one device at a time.
+- **Bulk device selection**: check multiple devices in the list, then use **Modify** to run an action against only the selected devices.
+
+<Info>
+Most operations are restricted to members with the Operator role (or higher). Check each section for the minimum required access.
+</Info>
+
+## Device actions
+
+Members with the Operator role or above can run these actions from the device summary page or in bulk from the devices list.
+
+### Restart services
+
+`Restart services` stops and recreates every running service on the device. It removes containers and starts them again from the latest release. This differs from running `balena restart` inside a host OS shell, which does not recreate containers from scratch.
+
+<Info>
+Only data stored in `/data` (or named volumes) survives the restart. Anything written elsewhere in the container filesystem is removed when the container is recreated.
+</Info>
+
+Restarting services can flush invalid runtime state, encourage stateless container design, and ensure persistent data strategies follow best practices such as [persistent storage](https://docs.balena.io/learn/develop/runtime/#persistent-storage) or [Docker's persistence guidance](https://docs.docker.com/storage/).
+
+<Warning>
+Action notifications are not queued. If the device is offline when you trigger the restart, it will not run when the device reconnects.
+</Warning>
+
+### Purge data
+
+`Purge data` clears persistent storage for the device:
+
+- On balenaOS versions earlier than 2.12.0, the action deletes `/data` inside each service container (and the associated `/mnt/data/resin-data` volume).
+- On balenaOS 2.12.0 and newer, the Supervisor removes all named volumes and recreates them empty.
+
+<Warning>
+Supported on Supervisor (Agent) versions 1.1.0 and higher only.
+</Warning>
+
+### Reboot
+
+`Reboot` restarts the entire device, including the host OS kernel. This is a full power-cycle equivalent, not just a container restart.
+
+<Warning>
+Requires Supervisor (Agent) version 1.1.0 or newer. Offline devices do not receive queued notifications.
+</Warning>
+
+### Shutdown
+
+`Shutdown` stops the device safely. After a shutdown, you must power-cycle the device locally to bring it back online.
+
+<Warning>
+Requires Supervisor (Agent) version 1.1.0 or newer. Do not trigger this for remote devices unless you have a plan to power them back on.
+</Warning>
+
+### Delete device
+
+`Delete device` removes the device from balenaCloud and the fleet. The device keeps running its last downloaded release but never again receives updates or remote commands.
+
+<Warning>
+Deletion is irreversible without re-provisioning the device. Confirm the device is no longer needed before continuing.
+</Warning>
+
+## Device settings
+
+These settings are available on the device summary page. Operator-level access or higher is required.
+
+### Public device URL
+
+Enable the **Public device URL** toggle to expose port 80 through a balenaCloud-managed URL of the form `<DEVICE_UUID>.balena-devices.com`.
+
+![Toggle public device URL](https://docs.balena.io/img/common/settings/toggle-public-url.webp)
+
+The feature relies on [Cloudlink](/learn/welcome/security/#cloudlink) and is best for intermittent debugging or configuration tasks. For highly available ingress, prefer a dedicated tunneling service such as [Cloudflare Tunnels](https://www.cloudflare.com/products/tunnel/) (see our [blog post](https://www.balena.io/blog/expose-your-balena-device-to-the-internet-with-cloudflare-tunnel/)), [Tailscale](https://tailscale.com/), or [Ngrok](https://ngrok.com/).
+
+![Public URL error](https://docs.balena.io/img/common/settings/public-url-error.webp)
+
+You can also toggle the setting from the device summary page using the quick action shown below.
+
+![Public URL toggle](https://docs.balena.io/img/common/settings/public-url-toggle.webp)
+
+### Move device to another fleet
+
+Change the **Fleet** setting to transfer a device to another compatible fleet. Only fleets with matching device architecture appear in the list. After you select the new fleet, the device moves immediately, but the update starts on the next Supervisor poll (typically every few minutes).
+
+<Warning>
+On balenaOS 2.12.0 and newer, persistent data (named volumes) is wiped automatically during the transfer. Older balenaOS versions retain the data at `/data`, which you can still access from the host OS. Consider running **Purge data** before the move if you do not plan to return the device to the original fleet.
+</Warning>
+
+### balenaOS update
+
+Use **balenaOS update** to install a newer host OS version. Review the [self-service update guide](/reference/OS/updates/self-service) for supported device types and the detailed workflow.
+
+### Local mode
+
+Enable **Local mode** for rapid iteration when developing services. Local mode lets you push changes over the LAN with [`balena push <device-ip>`](/learn/develop/local-mode) instead of the cloud build pipeline.
+
+### Deactivate device
+
+`Deactivate device` removes the device from active billing after a one-time deactivation fee. The device must be offline and linked to a valid billing account to proceed. Once deactivated, it remains inactive until it checks back in.
+
+Learn more about inactive device billing [in the accounts guide](/learn/accounts/billing/#inactive-devices).
+
+### Grant support access
+
+Use **Grant support access** to share temporary access with the balena support team. Set the access duration and the devices that should receive support [as described here](/learn/accounts/support-access).
+
+## Fleet, block, and app settings
+
+Administrators find these options in the **Settings** panel for a fleet, block, or app.
+
+### Change fleet type
+
+Convert a fleet to another supported type when the devices meet the balenaOS requirements. Refer to [fleet types](/learn/accounts/fleet-types) for compatibility details.
+
+### Rename fleet
+
+Rename Microservices or Essentials fleets directly from the settings panel. Legacy and Classic fleets must be upgraded before they can be renamed.
+
+### Transfer fleet ownership
+
+Transfer fleets between organizations without losing history:
+
+1. Note the fleet name in the source organization and your balenaCloud username.
+2. Ask an administrator in the target organization to create an empty fleet with the same name.
+3. Have that administrator add you to the new fleet as a `Developer` (unless you already have admin rights in the target organization).
+4. In the source organization, open **Settings → Set this fleet's ownership** and select the target organization.
+
+<Note>
+If **Set this fleet's ownership** is disabled, confirm the target organization has an empty fleet with the same name and that you are a member of it.
+</Note>
+
+After the transfer, the original owner is removed from the target fleet automatically. Invite them again if they still need access. Devices continue running normally throughout the transfer.
+
+### Transfer block ownership
+
+Block transfers follow the same pattern as fleet transfers:
+
+1. Record the block name and your balenaCloud username.
+2. Ask the target organization to create an empty block with the same name.
+3. Have the target administrator add you as a `Developer` on the new block (skip if you already administer the organization).
+4. From the source block, choose **Settings → Set this block's ownership** and select the destination organization.
+
+<Note>
+If the button is disabled, double-check the target organization created the empty block and granted you access as a developer.
+</Note>
+
+After transfer completion, the source owner is removed from the target block. Invite them back if needed.
+
+### Delete fleet
+
+`Delete fleet` permanently removes the fleet.
+
+<Warning>
+Move or decommission devices before deleting the fleet. Otherwise, devices become orphaned: they keep running the latest deployed release but cannot receive future updates or actions.
+</Warning>
+
+## Release settings
+
+These options live under **Settings** for each release.
+
+### Validation status
+
+Mark a release as **valid** or **invalid** to control whether devices can pin to it. Invalidating a release pushes devices (that are not pinned) to the fleet's current target release. Pinned entities stay on the invalid release until you move them manually or revalidate it.
+
+### Delete release
+
+`Delete release` removes the release permanently. Use it to clean up old history after invalidating or replacing a release.
+
+<Info>
+If you preload a device with balenaOS earlier than 2.113.14 and delete the referenced release before provisioning, the device will boot into a VPN-only state. Update the Supervisor to 14.9.4 or newer to recover.
+</Info>

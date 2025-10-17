@@ -1,0 +1,71 @@
+---
+title: "Device and update statuses"
+description: "Understand device connectivity indicators and supervisor update states in balenaCloud."
+sidebarTitle: "Device statuses"
+---
+
+## Overview
+
+balenaCloud surfaces the health of every device through two related signals:
+
+- **Device status** reflects connectivity to Cloudlink (VPN) and heartbeat polling.
+- **Update status** tracks how far the device has progressed toward the target release.
+
+Use both to decide whether a device can receive actions, deploy updates, or needs attention.
+
+## Device statuses
+
+Devices appear with one of the following states on the fleet list, device summary, and fleet overview pages:
+
+| Status | Description |
+| --- | --- |
+| **Operational** | The device is communicating with balenaCloud within the normal interval. Both Cloudlink and the Heartbeat API are healthy. If [Cloudlink is disabled](/reference/supervisor/bandwidth-reduction/#side-effects--warnings), the heartbeat alone keeps the device operational. |
+| **Reduced functionality** | One connectivity path is missing—either the Heartbeat API has not reported recently or Cloudlink is offline. The device is still online but certain actions are unavailable. |
+| **Disconnected** | The device lost both Cloudlink and heartbeat connectivity for longer than the configured poll interval. The device cannot send or receive updates. |
+| **Configuring** | The device is applying host OS configuration, such as enabling a setting or finishing an OS update. |
+| **Updating** | The device is installing a new application release. Future updates will also surface OS updates here. |
+| **Post provisioning** | The device has been provisioned but has not yet booted from internal storage (for example, eMMC or NVMe). |
+| **Inactive** | The device was [deactivated](/learn/accounts/billing/#inactive-devices) or preregistered but has not connected to the balenaCloud API yet. |
+| **Frozen** | The device was frozen because it exceeds the organization allowance or belongs to a paid fleet type on a free-tier organization. |
+
+## Connectivity indicators
+
+The device list shows boolean columns for Cloudlink and heartbeat connectivity.
+
+![Device connectivity indicators](https://docs.balena.io/img/common/main_dashboard/device_status.webp)
+
+- **Cloudlink = true, Heartbeat = false**: Supervisor cannot reach the API. Deployments, configuration variables, and other state changes will not apply, but remote access (web terminal, SSH) still works. Run a [health check](/reference/diagnostics/#device-health-checks) and review [device diagnostics](/reference/diagnostics/#device-diagnostics) to investigate.
+- **Heartbeat = true, Cloudlink = false**: The device can poll the API for updates, but immediate actions (restart, purge, reboot, shutdown) and Cloudlink-only features like [SSH access](/learn/manage/ssh-access) are unavailable. Check for VPN traffic blocked by a firewall.
+
+<Note>
+If the device powers off, the heartbeat indicator remains green until the next polling window elapses. After the poll interval passes without contact, the device transitions to **Disconnected**.
+</Note>
+
+## Update statuses
+
+Devices running Supervisor 16.7.0 or newer report granular update states:
+
+| Status | Description |
+| --- | --- |
+| **Done** | The device finished applying the target release and is in sync. |
+| **Downloading** | The Supervisor is pulling container images for the new release. |
+| **Downloaded** | All images are stored locally. If the device holds an [update lock](/learn/deploy/release-strategy/update-locking), it stays in this state until the lock releases (subject to the configured [update strategy](/learn/deploy/release-strategy/update-strategies/#controlling-the-update-strategy)). |
+| **Applying changes** | The Supervisor is stopping old containers, updating volumes, networks, and applying other changes from the new release. |
+| **Rejected** | The target release requires services that do not meet [container requirements](/learn/develop/multicontainer/#container-requirements). |
+| **Aborted** | The Supervisor gave up on installing the release (reserved for future conditions such as repeated download failures).
+
+<Info>
+Update status data currently focuses on application releases. While host OS updates are underway, the device status shows **Configuring** with additional context—for example, `Configuring (Update successful, rebooting)`.
+</Info>
+
+## Update status duration
+
+The dashboard displays an **Update status duration** that measures how long the device has remained in its current update state. When you query the data from the API you receive a timestamp. The duration resets whenever the status changes.
+
+<Note>
+Supervisor interprets app restarts or reboots the same way as fresh installations, so the update status duration refreshes after those events.
+</Note>
+
+## Need deeper troubleshooting?
+
+If the indicators above do not explain a device state, work through the [device debugging masterclass](https://docs.balena.io/learn/more/masterclasses/device-debugging) for step-by-step remediation guidance.

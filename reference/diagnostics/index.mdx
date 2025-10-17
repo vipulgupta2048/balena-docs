@@ -1,0 +1,118 @@
+# Diagnostics
+
+Use the diagnostics tooling in balenaCloud to assess device health before SSHing into a host. Running the automated checks captures the current device state for later review and greatly reduces the back-and-forth during support investigations.
+
+## Device health checks
+
+Open a device in the dashboard, switch to **Diagnostics → Device health checks**, and choose **Run checks** to execute the suite. Each check returns a pass or fail result together with an explanation and suggested remediation.
+
+![Running device health checks in the dashboard](https://user-images.githubusercontent.com/22801822/154141814-6953717d-f90a-456b-ad51-474b14dcc5e9.png)
+
+Below is a reference for the built-in checks you are most likely to see in the results.
+
+### `check_balenaOS`
+- **Summary:** Confirms the device runs balenaOS 2.x and that the release is still in production.
+- **Triage:** Upgrade to the latest balenaOS 2.x if the check fails. Contact Support for assistance migrating away from balenaOS 1.x.
+- **Depends on:** Requires a healthy network stack to query release metadata.
+
+### `check_under_voltage`
+- **Summary:** Watches kernel messages for Raspberry Pi under-voltage events that precede erratic behaviour.
+- **Triage:** Replace the PSU with one that can supply a stable 5 V / 2.5 A or better under load.
+
+### `check_memory`
+- **Summary:** Alerts when memory usage crosses the default 90% threshold.
+- **Triage:** Use `top` or an equivalent tool to find services with runaway `%VSZ`, then audit those services for leaks or data growth.
+
+### `check_container_engine`
+- **Summary:** Confirms balenaEngine is running cleanly without crash loops or unclean restarts.
+- **Triage:** Capture a diagnostics snapshot before restarting the engine and involve Support if failures persist.
+
+### `check_supervisor`
+- **Summary:** Verifies the balena Supervisor is healthy, running a released version, and tracking the correct target state.
+- **Triage:** Gather diagnostics before restarting the Supervisor. Engage Support if repeated failures occur.
+- **Depends on:** A functional container engine.
+
+### `check_localdisk`
+- **Summary:** Aggregates SMART-style metrics and internal flags to highlight storage problems.
+- **Triage:** Investigate for failing media, filesystem errors, or disk saturation, and consider replacing the storage device.
+
+### `test_disk_space`
+- **Summary:** Warns when disk usage exceeds 90%, which can destabilise the Supervisor and containers.
+- **Triage:** Identify large files with:
+  ```sh
+  du -a /mnt/data/docker | sort -nr | head -10
+  ```
+  Remove unnecessary data or limit verbose logging.
+
+### `test_write_latency`
+- **Summary:** Measures average write latency and compares it to a 1-second target.
+- **Triage:** High latency suggests failing media or heavy I/O. Check workload patterns and hardware.
+- **Notes:** Treat small sample sizes with caution because they fluctuate more dramatically.
+
+### `test_disk_expansion`
+- **Summary:** Confirms the root filesystem expanded successfully on first boot.
+- **Triage:** Storage problems or provisioning faults can prevent expansion. Reflash the storage media or replace it if the issue repeats.
+
+### `test_data_partition_mounted`
+- **Summary:** Ensures the data partition is mounted and writable.
+- **Triage:** A missing mount often indicates storage corruption; involve Support before attempting manual repairs.
+
+### `check_timesync`
+- **Summary:** Tests that the system clock is in sync.
+- **Triage:** Ensure outbound NTP is allowed, or temporarily sync using HTTP headers. A valid network connection is required.
+
+### `check_temperature`
+- **Summary:** Monitors current temperature and throttling signals to prevent CPU slowdowns.
+- **Triage:** Improve airflow, heatsinking, or reduce workload when throttling is detected.
+
+### `check_os_rollback`
+- **Summary:** Detects failed boots and rollback attempts triggered by the host OS.
+- **Triage:** Collect diagnostics and coordinate with Support before retrying the update.
+
+### `check_networking`
+- **Summary:** Runs connectivity diagnostics such as DNS resolution, Wi-Fi signal strength, upstream latency, and registry/API reachability.
+- **Depends on:** A healthy container engine, which executes the network tests.
+- **Triage:** Address local network restrictions, SSID coverage, or firewall rules depending on which sub-test fails. IPv6-only failures can be mitigated by [disabling IPv6](https://www.balena.io/docs/reference/OS/network/2.x/#disable-ipv6).
+
+### `test_balena_registry`
+- **Summary:** Performs an end-to-end authentication check against the balenaCloud registry.
+- **Triage:** Intermittent results usually point to unstable links or restrictive proxies/firewalls. Review local infrastructure.
+
+### `check_user_services`
+- **Summary:** Surfaces health checks with the `check_service_` prefix that originate from your own containers.
+- **Triage:** Inspect service logs for restart loops or failing health checks. Problems are typically application-specific.
+- **Depends on:** A healthy container engine.
+
+:::tip Extend the catalogue
+You can add custom health checks by defining the [`HEALTHCHECK` Dockerfile instruction](https://docs.docker.com/engine/reference/builder/#healthcheck). The dashboard captures the exit code and up to 100 characters of output for every custom check.
+:::
+
+## Device diagnostics
+
+Choose **Diagnostics → Device diagnostics → Run diagnostics** to capture a detailed snapshot of the device. The report lists every command under `--- COMMANDS ---` and groups output into the following areas:
+
+- **BALENA:** balenaEngine status and recent journal entries
+- **HARDWARE:** CPU, memory, device tree, device nodes, USB devices, and disk usage
+- **NETWORK:** Interface configuration, connectivity probes, DNS, VPN, and firewall state
+- **OS:** Device configuration, kernel logs, boot journals, and host OS update history
+- **SUPERVISOR:** Supervisor logs and state
+- **TIME:** Current clock state and uptime
+
+Use this data to spot resource exhaustion, configuration drift, or connectivity regressions without direct shell access.
+
+:::info Preserve diagnostics
+Download or copy diagnostics output before power cycling or re-provisioning a device so you can compare healthy and unhealthy states later.
+:::
+
+## Supervisor state
+
+The **Supervisor state** tab queries the Supervisor immediately without re-running checks. It returns two panels:
+
+- **Supervisor status:** Current Supervisor version, API endpoint, and runtime status. Lack of data usually means the VPN connection or Supervisor has failed.
+- **Target supervisor state:** The desired state derived from the release the device is tracking. Compare this data with the Supervisor status to confirm services, configuration, and boot settings match expectations.
+
+Discrepancies between the target and current state often explain devices that fail to apply new releases or respect configuration variables.
+
+## Preparing a support case
+
+Before raising a ticket or forum thread, run the full diagnostics suite, download the results, and note the failing checks. Providing that bundle alongside device UUIDs and recent timeline events speeds up root cause analysis considerably.
