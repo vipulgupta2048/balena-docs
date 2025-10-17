@@ -10,6 +10,9 @@ jobs:
   deploy-to-Mintlify:
     name: Daily deploy to Mintlify
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     env:
       CF_BRANCH: master
       cloudflare_website: balenacloud-docs
