@@ -1,0 +1,89 @@
+
+balenaOS reads device- and fleet-specific settings from `config.json`, a JSON document stored on the boot partition. When you download a provisioned image from the dashboard the file is pre-populated with fleet metadata. Images downloaded via `balena os download` require configuration via `balena os configure` (or manual edits) before flashing.
+
+:::info `config.json` vs `config.txt`
+`config.json` controls balenaOS and Supervisor settings. `config.txt` (documented in [Advanced boot settings](/reference/OS/advanced)) configures Raspberry Pi firmware options. They live side-by-side on the boot partition but serve different purposes.
+:::
+
+The boot partition is labelled `resin-boot` and mounts at `/mnt/boot` on a running device. Inspect the live configuration with `jq`:
+
+```sh
+balena ssh <device-uuid>
+cat /mnt/boot/config.json | jq '.'
+```
+
+Never edit `/resin-boot/config.json`. That path belongs to the read-only root filesystem and does not affect runtime behaviour.
+
+## When and how to edit
+
+### Before provisioning
+
+1. Flash the image.
+2. Mount the `resin-boot` partition on your workstation.
+3. Edit `config.json` directly, keeping valid JSON syntax.
+
+During first boot the Supervisor uploads these values to balenaCloud so they appear in the dashboard configuration view.
+
+### After provisioning
+
+Editing the file directly on `/mnt/boot` is risky because malformed JSON can prevent the device from provisioning on the next boot. Prefer one of these approaches:
+
+- **Dashboard Configuration tab:** most common fields (persistent logging, country code, DNS, NTP servers) are exposed as toggles or text inputs.
+- **Supervisor API:** call `PATCH /v1/device/host-config` to update fields such as `hostname` programmatically.
+- **Reconfigure and reflash:** for large sets of changes it may be faster to regenerate the image with `balena os configure` and reprovision.
+
+If you must edit on-device, create a backup first and keep the SSH session open until you validate the JSON:
+
+```sh
+cd /mnt/boot
+cp config.json config.json.backup
+jq '.hostname="debug-device"' config.json.backup > config.json
+jq '.' config.json >/dev/null && reboot
+```
+
+## Key sections
+
+- **Identity:** `applicationId`, `applicationName`, `uuid`, `deviceApiKey`, `deviceId` map the device to its fleet and authenticate supervisor calls.
+- **Networking:** `apiEndpoint`, `registryEndpoint`, `deltaEndpoint`, `vpnEndpoint`, `vpnPort`, optional `dnsServers`, `ntpServers`, `country`.
+- **Supervisor behaviour:** `appUpdatePollInterval`, `listenPort`, `persistentLogging`, and flags such as `developmentMode`.
+- **Host tuning:** `os.network.connectivity`, `os.network.wifi.randomMacAddressScan`, `os.sshKeys`, custom `os.udevRules`.
+
+## Sample `config.json`
+
+```json
+{
+	"hostname": "my-custom-hostname",
+	"persistentLogging": true,
+	"country": "GB",
+	"ntpServers": "ntp-wwv.nist.gov resinio.pool.ntp.org",
+	"dnsServers": "208.67.222.222 8.8.8.8",
+	"appUpdatePollInterval": 900000,
+	"developmentMode": "false",
+	"os": {
+		"network": {
+			"connectivity": {
+				"uri": "https://api.balena-cloud.com/connectivity-check",
+				"interval": "300"
+			},
+			"wifi": {
+				"randomMacAddressScan": false
+			}
+		},
+		"udevRules": {
+			"56": "ENV{ID_FS_LABEL_ENC}==\"resin-root*\", IMPORT{program}=\"resin_update_state_probe $devnode\", SYMLINK+=\"disk/by-state/$env{RESIN_UPDATE_STATE}\""
+		},
+		"sshKeys": [
+			"ssh-rsa AAAAB3Nza... balena@laptop",
+			"ssh-ed25519 AAAAC3Nza... balena@buildbox"
+		]
+	}
+}
+```
+
+## Valid fields
+
+Refer to the [meta-balena config.json reference](https://github.com/balena-os/meta-balena/blob/master/docs/pages/configuration/config-json.md) for the authoritative list of keys, defaults, and platform notes. That document also clarifies which fields are deprecated or restricted to specific device types.
+
+:::tip Keep a fallback copy
+Before closing an SSH session, ensure the updated file parses with `jq '.' config.json`. If you lose access, restore `config.json.backup` from the same session or reflash using the backed-up file on your workstation.
+:::
