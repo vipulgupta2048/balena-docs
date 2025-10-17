@@ -49,7 +49,7 @@ jobs:
         id: restore-cache
         if: |
           github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: .lycheecache
           key: cache-lychee-${{ github.sha }}
@@ -71,7 +71,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Save lychee cache
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         if: always()
         with:
           path: .lycheecache
