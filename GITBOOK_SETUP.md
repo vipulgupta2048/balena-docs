@@ -170,6 +170,25 @@ Images should be placed in appropriate directories and referenced with relative 
 
 ## GitBook Features
 
+### MCP Server (Model Context Protocol)
+
+<cite index="21-12,21-13">Every published GitBook site automatically includes a Model Context Protocol (MCP) server that allows AI assistants to access your documentation content directly</cite>, making it easy for tools like Claude Desktop, Cursor, and VS Code extensions to answer questions using your docs.
+
+**How it works:**
+- <cite index="21-14,21-15">The MCP server is available at your site's URL with /~gitbook/mcp appended</cite>
+- Example: If your docs are at `https://docs.balena.io`, the MCP server is at `https://docs.balena.io/~gitbook/mcp`
+- Users can add this URL to their AI tools to access your documentation
+
+**Enable MCP Server:**
+1. Go to your site's Customization > Configure menu
+2. Under "Page actions", enable the MCP server option
+3. Users will see a "Copy MCP URL" option in the page actions menu
+
+**Benefits:**
+- AI assistants can answer questions using your documentation
+- Developers can access docs directly in their IDE
+- No additional setup required - automatically generated
+
 ### Search
 
 GitBook provides built-in full-text search across all documentation.
