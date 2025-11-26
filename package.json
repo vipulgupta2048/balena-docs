@@ -2,13 +2,12 @@
   "name": "balena-docs",
   "private": true,
   "version": "0.1.0",
-  "description": "balenaCloud public documentation built with Mintlify",
+  "description": "balenaCloud public documentation built with GitBook",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev": "mint dev",
     "test": "npm run test:spelling",
     "test:spelling": "cspell lint --gitignore -c cspell.json",
     "build": "./tools/fetch-external.sh && npm run build:fast",
@@ -23,8 +22,6 @@
     "node-jq": "^4.4.0"
   },
   "devDependencies": {
-    "cspell": "^8.17.1",
-    "mint": "^4.2.173",
-    "wrangler": "^3.114.15"
+    "cspell": "^8.17.1"
   }
 }

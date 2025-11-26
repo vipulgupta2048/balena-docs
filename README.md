@@ -1,47 +1,56 @@
-# Mintlify Starter Kit
+# balena Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
-New update.
+Welcome to the balena documentation! This comprehensive guide will help you build, deploy, and manage IoT fleets at scale.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## What is balena?
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+balena is a complete set of tools for building, deploying, and managing fleets of connected Linux devices. Whether you're managing 10 devices or 10,000, balena provides the infrastructure and tools you need to succeed.
 
-[**Follow the full quickstart guide**](https://starter.mintlify.com/quickstart)
+## Getting Started
 
-## Development
+New to balena? Start here:
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+- [Introduction](learn/welcome/introduction.mdx) - Learn what balena is and how it works
+- [Primer](learn/welcome/primer.mdx) - Get familiar with key concepts
+- [Getting Started Guide](learn/getting-started/raspberrypi5/nodejs.mdx) - Deploy your first application
 
-```
-npm i -g mint
-```
+## Documentation Sections
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+### Learn
 
-```
-mint dev
-```
+Comprehensive guides covering everything from account setup to deployment strategies:
 
-View your local preview at `http://localhost:3000`.
+- **Welcome** - Introduction to balena and key concepts
+- **Accounts** - Managing users, organizations, and billing
+- **Getting Started** - Step-by-step tutorials for your first deployment
+- **Develop** - Building applications with balena
+- **Deploy** - Deployment strategies and optimization
+- **Manage** - Fleet management and device operations
+- **Masterclasses** - In-depth technical guides
 
-## Publishing changes
+### FAQ
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+Common questions and troubleshooting guides for balena users.
 
-## Need help?
+### Reference
 
-### Troubleshooting
+Technical reference documentation:
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+- **API** - REST API documentation
+- **SDKs** - Node.js and Python SDK references
+- **CLI** - Command-line interface reference
+- **Host OS** - balenaOS configuration and updates
+- **Base Images** - Container base image documentation
+- **Device Supervisor** - Supervisor API and metrics
+- **Hardware** - Supported devices and compatibility
 
-### Resources
+## Need Help?
 
-- [Mintlify documentation](https://mintlify.com/docs)
-- [Mintlify community](https://mintlify.com/community)
-- Other resource
+- [FAQ](faq/questions.mdx) - Frequently asked questions
+- [Troubleshooting](faq/troubleshooting/index.mdx) - Common issues and solutions
+- [Contact Support](https://www.balena.io/contact) - Get in touch with our team
+- [Community Forums](https://forums.balena.io) - Connect with other balena users
+
+## Contributing
+
+Found an issue or want to improve the documentation? Visit our [GitHub repository](https://github.com/balena-io/docs) to contribute.

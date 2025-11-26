@@ -1,15 +1,69 @@
 # Migration Guide
 
-This guide tracks the ongoing migration from the Metalsmith-based documentation to Mintlify. Update this file as pages move through the workflow.
+## GitBook Migration (November 2024)
 
-## Process Checklist
+This repository has been successfully migrated from Mintlify to GitBook.
+
+### Migration Summary
+
+**Status:** ✅ Complete
+
+**Changes Made:**
+1. Created `.gitbook.yaml` configuration file
+2. Created `SUMMARY.md` with complete navigation structure
+3. Removed `docs.json` (Mintlify configuration)
+4. Simplified frontmatter in all `.mdx` files (kept only `title` field)
+5. Updated `package.json` to remove Mintlify dependencies
+6. Rewrote `README.md` as GitBook introduction
+7. Created `GITBOOK_SETUP.md` with comprehensive setup instructions
+
+**Files Migrated:** 59 documentation pages
+- Learn section: 42 pages
+- FAQ section: 5 pages  
+- Reference section: 12 pages
+
+**Verification:** All pages verified to exist and are properly linked in `SUMMARY.md`
+
+### Next Steps
+
+1. **Set up GitBook Sync:**
+   - Create a GitBook space
+   - Configure Git Sync with this repository
+   - Point to the `master` branch (or your preferred branch)
+   - GitBook will automatically detect `.gitbook.yaml`
+
+2. **Review and Test:**
+   - Verify all pages render correctly in GitBook
+   - Test navigation structure
+   - Check internal links
+   - Verify images display properly
+
+3. **Configure Custom Domain (Optional):**
+   - Set up custom domain in GitBook settings
+   - Configure DNS records
+   - Enable SSL
+
+4. **Set up Integrations (Optional):**
+   - Slack notifications
+   - Analytics
+   - Search enhancements
+
+See `GITBOOK_SETUP.md` for detailed instructions.
+
+---
+
+## Previous Migration: Metalsmith to Mintlify
+
+This guide tracked the migration from the Metalsmith-based documentation to Mintlify. This migration is now complete and the repository has been further migrated to GitBook.
+
+### Process Checklist (Historical)
 - Audit the Metalsmith source content listed in `local-repo-converted.txt`.
 - Prioritize straightforward pages first; defer complex or automation-heavy content.
 - Recreate the content in Mintlify MDX, adopting Mintlify components (callouts, frames, code groups, tabs) where they improve clarity.
 - Verify navigation entries in `docs.json` and cross-links after migrating.
 - Log progress and blockers here so remaining work is obvious.
 
-## Status Table
+### Status Table (Historical - Mintlify Migration)
 | Source Path | Target Path | Complexity | Status | Notes |
 | --- | --- | --- | --- | --- |
 | docs/pages/faq/troubleshooting.md | faq/troubleshooting/index.mdx | Moderate | Done | Replaced dynamic switcher with curated sections and device-specific callouts. |
@@ -50,10 +104,6 @@ This guide tracks the ongoing migration from the Metalsmith-based documentation 
 | docs/pages/learn/accounts/idp-setup/microsoft-entra-saml-setup.md | learn/accounts/idp-setup/microsoft-entra-saml-setup.mdx | Moderate | Done | Step-by-step Entra ID SSO integration with updated wording and callouts. |
 | docs/pages/learn/accounts/idp-setup/google-workspace-saml-setup.md | learn/accounts/idp-setup/google-workspace-saml-setup.mdx | Straightforward | Done | Documented Google Workspace SAML setup with clarified identifiers. |
 
-## Deferred Items
+### Deferred Items (Historical)
 - Any page that depends on Metalsmith dynamic variables (`{{$device}}`, `{{import ...}}`) until we define Mintlify data replacements.
 - Shell scripts in `docs/tools/` pending content migration; plan build process changes once doc structure settles.
-
-## Next Up
-1. Identify similarly structured FAQ pages for batching now that the troubleshooting hub pattern is established.
-2. Plan an approach for `learn/deploy/offline-updates.md` and other deferred high-complexity pages (diagram replacements, download automation notes).
