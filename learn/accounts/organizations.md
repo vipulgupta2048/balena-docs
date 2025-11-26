@@ -1,8 +1,3 @@
----
-title: "Organization management"
----
-
-
 ## Overview
 
 Organizations group members, teams, fleets, and billing under a single umbrella. Administrators manage access, plan subscriptions, and shared resources, while members receive scoped access to the fleets they need.
