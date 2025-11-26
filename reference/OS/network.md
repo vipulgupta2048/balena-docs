@@ -1,6 +1,3 @@
----
-title: "Networking on balenaOS"
----
 
 
 # Networking on balenaOS

@@ -1,6 +1,3 @@
----
-title: "Support access"
----
 
 ## Accessing your device
 

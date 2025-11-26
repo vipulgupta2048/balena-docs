@@ -1,6 +1,3 @@
----
-title: "SAML app for Microsoft Entra ID"
----
 
 
 ## Overview

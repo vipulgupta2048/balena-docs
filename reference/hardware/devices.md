@@ -1,6 +1,3 @@
----
-title: "Single-board computers"
----
 
 
 {/* TODO: replace with actual device list component or static list */}

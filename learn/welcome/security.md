@@ -1,6 +1,3 @@
----
-title: "Security"
----
 
 
 ## Trust and Transparency

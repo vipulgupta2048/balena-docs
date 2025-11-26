@@ -1,6 +1,3 @@
----
-title: "Delta updates"
----
 
 
 ## How delta updates work

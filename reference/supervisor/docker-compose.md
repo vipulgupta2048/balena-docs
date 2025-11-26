@@ -1,6 +1,3 @@
----
-title: "docker-compose.yml Fields"
----
 
 
 # docker-compose.yml fields

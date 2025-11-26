@@ -1,6 +1,3 @@
----
-title: "Actions and settings"
----
 
 
 ## Overview

@@ -1,6 +1,3 @@
----
-title: "What is balenaOS?"
----
 
 
 ## What is balenaOS?

@@ -1,6 +1,3 @@
----
-title: "Configuration variables"
----
 
 
 ## Overview

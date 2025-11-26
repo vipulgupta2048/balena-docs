@@ -1,6 +1,3 @@
----
-title: "Fleet update strategy"
----
 
 
 ## Pick the right strategy

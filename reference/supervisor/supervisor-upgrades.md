@@ -1,6 +1,3 @@
----
-title: "Supervisor Upgrades"
----
 
 
 # Self-service Supervisor Upgrades

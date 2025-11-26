@@ -1,6 +1,3 @@
----
-title: "Troubleshooting information for Raspberry Pi 5 "
----
 
 ### Terminal Closes On Update 
 

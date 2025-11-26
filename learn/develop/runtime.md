@@ -1,6 +1,3 @@
----
-title: "Communicate outside the container"
----
 
 
 ## Overview

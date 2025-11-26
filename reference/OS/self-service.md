@@ -1,6 +1,3 @@
----
-title: "Self-service Updates"
----
 
 
 # Self-service Updates

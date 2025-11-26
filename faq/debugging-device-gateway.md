@@ -1,6 +1,3 @@
----
-title: "Accessing a Device using a Gateway Device"
----
 
 
 

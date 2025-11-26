@@ -1,6 +1,3 @@
----
-title: "Host OS Update Process"
----
 
 
 # Host OS update lifecycle

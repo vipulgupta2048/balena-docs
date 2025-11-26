@@ -1,6 +1,3 @@
----
-title: "Going to production"
----
 
 
 ## Phase 1: Design

@@ -1,6 +1,3 @@
----
-title: "Interact with hardware"
----
 
 
 ## Access device interfaces

@@ -1,6 +1,3 @@
----
-title: "Welcome"
----
 
 
 Our [balena primer](https://docs.balena.io/learn/welcome/primer/) covers the platform from end to end, walking through all the pieces and how they fit together.

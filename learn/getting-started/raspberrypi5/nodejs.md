@@ -1,6 +1,3 @@
----
-title: "Getting started: Raspberry Pi 5 and Node.js"
----
 
 
 

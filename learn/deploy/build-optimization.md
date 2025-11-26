@@ -1,6 +1,3 @@
----
-title: "Optimize balena builds"
----
 
 
 ## Why optimize builds?

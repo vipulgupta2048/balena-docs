@@ -1,6 +1,3 @@
----
-title: "Fleet types"
----
 
 
 ## Overview

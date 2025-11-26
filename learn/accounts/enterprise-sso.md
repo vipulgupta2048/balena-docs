@@ -1,6 +1,3 @@
----
-title: "Enterprise Single Sign-On"
----
 
 
 ## Overview

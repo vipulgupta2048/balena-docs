@@ -1,6 +1,3 @@
----
-title: "Filters and tags"
----
 
 
 ## Overview

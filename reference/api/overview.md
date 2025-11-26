@@ -1,6 +1,3 @@
----
-title: "API overview"
----
 
 
 ## Why use the API?

@@ -1,6 +1,3 @@
----
-title: "SAML app for Google Workspace"
----
 
 
 ## Overview

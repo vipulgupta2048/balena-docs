@@ -1,6 +1,3 @@
----
-title: "Device logs"
----
 
 
 ## Overview

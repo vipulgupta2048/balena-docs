@@ -1,6 +1,3 @@
----
-title: "Reduce Bandwidth Usage"
----
 
 
 # Reduce Bandwidth Usage

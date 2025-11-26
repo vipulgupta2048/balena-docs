@@ -1,6 +1,3 @@
----
-title: "Self-service updates"
----
 
 
 ## Supported scenarios

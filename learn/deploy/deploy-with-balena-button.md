@@ -1,6 +1,3 @@
----
-title: "Deploy with the balena button"
----
 
 
 ## Overview

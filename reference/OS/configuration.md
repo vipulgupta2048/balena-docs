@@ -1,6 +1,3 @@
----
-title: "Configuring balenaOS"
----
 
 
 # Configuring balenaOS

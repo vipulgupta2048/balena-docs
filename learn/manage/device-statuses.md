@@ -1,6 +1,3 @@
----
-title: "Device and update statuses"
----
 
 
 ## Overview

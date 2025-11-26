@@ -1,6 +1,3 @@
----
-title: "Time management"
----
 
 
 # Time management

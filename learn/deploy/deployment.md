@@ -1,6 +1,3 @@
----
-title: "Deploy to your fleet"
----
 
 
 A release consists of a Docker image or set of images on our registry. These images are built from a source code repository, either locally or remotely on the [balenaCloud build server](https://docs.balena.io/learn/deploy/deployment/#the-balenacloud-build-server). When a successful release is created, all devices in the fleet are instructed to download and run the new release (according to the chosen [update strategy](https://docs.balena.io/learn/deploy/release-strategy/update-strategies/)).

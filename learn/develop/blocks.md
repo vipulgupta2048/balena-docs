@@ -1,6 +1,3 @@
----
-title: "Develop with blocks"
----
 
 
 ## What is a block?

@@ -1,6 +1,3 @@
----
-title: "Define a container"
----
 
 
 ## Why Dockerfiles matter

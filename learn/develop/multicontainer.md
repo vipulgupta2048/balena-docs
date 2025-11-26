@@ -1,6 +1,3 @@
----
-title: "Multiple containers"
----
 
 
 ## Why go multicontainer?
