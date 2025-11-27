@@ -8,7 +8,6 @@
 * [Primer](learn/welcome/primer.md)
 * [Production Plan](learn/welcome/production-plan.md)
 * [Security](learn/welcome/security.md)
-* [Support](learn/welcome/support.md)
 
 ### GETTING STARTED
 
@@ -24,11 +23,6 @@
 * [Blocks](learn/develop/blocks.md)
 * [Runtime](learn/develop/runtime.md)
 * [Hardware](learn/develop/hardware/index.md)
-  * [GPIO](learn/develop/hardware/gpio.md)
-  * [USB](learn/develop/hardware/usb.md)
-  * [I2C and SPI](learn/develop/hardware/i2c-and-spi.md)
-  * [Jetson Orin](learn/develop/hardware/jetson-orin/index.md)
-* [Provision with cloud IoT](learn/develop/cloud-iot-provisioning/index.md)
 
 ### DEPLOY
 
@@ -38,7 +32,6 @@
   * [Update Locking](learn/deploy/release-strategy/update-locking.md)
   * [Update Strategies](learn/deploy/release-strategy/update-strategies.md)
 * [Delta](learn/deploy/delta.md)
-* [Offline Updates](learn/deploy/offline-updates.md)
 * [Build Optimization](learn/deploy/build-optimization.md)
 * [Deploy with balena Button](learn/deploy/deploy-with-balena-button.md)
 
@@ -65,24 +58,15 @@
 * [Organizations](learn/accounts/organizations.md)
 * [Support Access](learn/accounts/support-access.md)
 
-### MORE RESOURCES
+### MASTERCLASSES
 
-* [Labs & Projects](learn/more/examples/labs-projects.md)
-  * [balenaBlocks](learn/more/examples/balenablocks.md)
-  * [Example Projects](learn/more/examples/example-projects.md)
-* [Glossary](learn/more/glossary.md)
-* [Collected Data](learn/more/collected-data.md)
-* Masterclasses
-  * [Masterclass Introduction](learn/more/masterclasses/masterclass-intro.md)
-  * [CLI](learn/more/masterclasses/cli-masterclass.md)
-  * [Advanced CLI](learn/more/masterclasses/advanced-cli.md)
-  * [BalenaOS](learn/more/masterclasses/host-os-masterclass.md)
-  * [Services](learn/more/masterclasses/services-masterclass.md)
-  * [Fleet management](learn/more/masterclasses/fleet-management.md)
-  * [Device debugging](learn/more/masterclasses/device-debugging.md)
-  * [Network](learn/more/masterclasses/network-masterclass.md)
-  * [Docker](learn/more/masterclasses/docker-masterclass.md)
-* [Anti-patterns](learn/more/anti-patterns.md)
+* [CLI](learn/masterclasses/cli-masterclass.md)
+* [Advanced CLI](learn/masterclasses/advanced-cli.md)
+* [BalenaOS](learn/masterclasses/host-os-masterclass.md)
+* [Services](learn/masterclasses/services-masterclass.md)
+* [Fleet management](learn/masterclasses/fleet-management.md)
+* [Device debugging](learn/masterclasses/device-debugging.md)
+* [Docker](learn/masterclasses/docker-masterclass.md)
 
 ## FAQ
 
@@ -102,20 +86,16 @@
 
 ### Host OS
 
-* [Overview](reference/OS/overview/index.md)
+* [Overview](reference/OS/overview.md)
 * Host OS updates
   * [Self-Service](reference/OS/updates/self-service.md)
   * [Update Process](reference/OS/updates/update-process.md)
   * [Rollbacks](reference/OS/updates/rollbacks.md)
-* [Extended support release process](reference/OS/extended-support-release.md)
-* [Network](reference/OS/network/index.md)
+* [Network](reference/OS/network.md)
 * [Configuration](reference/OS/configuration.md)
 * [Time](reference/OS/time.md)
 * [Advanced](reference/OS/advanced.md)
 * [Customer Board Support](reference/OS/customer-board-support.md)
-* [Secure Boot & Full Disk Encryption](reference/OS/secure-boot-and-full-disk-encryption/overview.md)
-  * Setup Guides
-    * [Generic x86-64 GPT](reference/OS/secure-boot-and-full-disk-encryption/generic-x86-64-gpt.md)
 
 ### Device supervisor
 
@@ -124,18 +104,16 @@
 * [Bandwidth Reduction](reference/supervisor/bandwidth-reduction.md)
 * [Docker Compose](reference/supervisor/docker-compose.md)
 * [Supervisor Upgrades](reference/supervisor/supervisor-upgrades.md)
-* [Configuration List](reference/supervisor/configuration-list/index.md)
-  * [Raspberry Pi 5](reference/supervisor/configuration-list/raspberrypi5.md)
+* [Configuration List](reference/supervisor/configuration-list.md)
 
 ### Base images
 
-* [balena Base Images](reference/base-images/balena-base-images.md)
-* [Device Types](reference/base-images/devicetypes.md)
+* [Overview](reference/base-images/overview.md)
+* [Base Images Reference](reference/base-images/base-images-ref.md)
 
 ### API
 
 * [Overview](reference/api/overview.md)
-* [Resources](reference/api/resources/index.md)
 
 ### CLI
 
@@ -143,8 +121,8 @@
 
 ### SDKs
 
-* [Node.js SDK](reference/sdk/node-sdk/index.md)
-* [Python SDK](reference/sdk/python-sdk/index.md)
+* [Node.js SDK](reference/sdk/node-sdk.md)
+* [Python SDK](reference/sdk/python-sdk.md)
 * [Deprecation Policy](reference/sdk/deprecation-policy.md)
 
 ### Diagnostics
