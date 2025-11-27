@@ -1,4 +1,4 @@
-
+# Devices
 
 {/* TODO: replace with actual device list component or static list */}
 

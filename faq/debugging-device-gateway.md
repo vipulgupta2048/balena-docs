@@ -1,5 +1,4 @@
-
-
+# Debugging Device Gateway
 
 Usually, we're able to stay connected to the device when the OpenVPN service isn't running because we're using a development image, and development images allow passwordless root connections via SSH. Had we been running a production image, then the device would have been in the 'Offline' state, but it would still potentially have had network access and be otherwise running correctly. This brings up an issue though, how can we connect to a faulty production device in the field?
 

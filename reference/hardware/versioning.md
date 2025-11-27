@@ -1,3 +1,4 @@
+# Versioning
 
 As an example the [Raspberry Pi 1 model B+](https://www.raspberrypi.org/products/raspberry-pi-1-model-b-plus/) and [Raspberry Pi Zero W](https://www.raspberrypi.org/products/raspberry-pi-zero-w/) are part of the same device type since they are both `armv6l` architecture SoCs and the boot loader is capable of booting both boards. However, the [Raspberry Pi 3 model B+](https://www.raspberrypi.org/products/raspberry-pi-3-model-b-plus/) is by default a `armv7l` CPU and we therefore separate it into a new device type.
 

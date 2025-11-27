@@ -1,5 +1,4 @@
-
-
+# Debugging Storage Media
 
 This can include multiple issues, but the most common are that of exhaustion of free space on a device, or that of SD card corruption.
 

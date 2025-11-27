@@ -1,4 +1,4 @@
-
+# Primer
 
 If you're eager to learn more about the inner workings, you're in luck! This guide covers the components and workflows involved in a typical balena deployment, with enough detail to answer the most common questions. If you're ready to dig in deeper, why not [get started](https://docs.balena.io/learn/getting-started/) with a project of your own?
 

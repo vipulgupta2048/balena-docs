@@ -1,4 +1,4 @@
-
+# Device Metrics
 
 <Frame>
 [![Device Metrics](https://assets.balena.io/blog-common/archive/2020/09/device-metrics-1.png)](https://assets.balena.io/blog-common/archive/2020/09/device-metrics-1.png)

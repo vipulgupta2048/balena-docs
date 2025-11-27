@@ -1,5 +1,4 @@
-
-
+# Release Policy
 
 You may define the fleet and device release policies via the [balenaCloud dashboard](https://dashboard.balena-cloud.com/) or programmatically through the [API](https://docs.balena.io/reference/api/overview/), [SDKs](https://docs.balena.io/reference/sdk/node-sdk/), or [CLI](https://docs.balena.io/reference/balena-cli/).
 

@@ -1,5 +1,4 @@
-
-
+# Local Mode
 
 ## Local mode requirements
 
