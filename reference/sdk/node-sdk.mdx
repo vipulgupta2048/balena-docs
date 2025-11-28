@@ -295,7 +295,7 @@ const sdk = fromSharedOptions();
             * [.getProgress(uuidOrId)](#balena.models.device.getProgress) ⇒ <code>Promise</code>
             * [.grantSupportAccess(uuidOrIdOrArray, expiryTimestamp)](#balena.models.device.grantSupportAccess) ⇒ <code>Promise</code>
             * [.revokeSupportAccess(uuidOrIdOrArray)](#balena.models.device.revokeSupportAccess) ⇒ <code>Promise</code>
-            * [.lastOnline(device)](#balena.models.device.lastOnline) ⇒ <code>String</code>
+            * ~~[.lastOnline(device)](#balena.models.device.lastOnline) ⇒ <code>String</code>~~
             * [.getOsVersion(device)](#balena.models.device.getOsVersion) ⇒ <code>String</code>
             * [.isTrackingApplicationRelease(uuidOrId)](#balena.models.device.isTrackingApplicationRelease) ⇒ <code>Promise</code>
             * [.getTargetReleaseHash(uuidOrId)](#balena.models.device.getTargetReleaseHash) ⇒ <code>Promise</code>
@@ -706,7 +706,7 @@ balena.models.device.get(123).catch(function (error) {
         * [.getProgress(uuidOrId)](#balena.models.device.getProgress) ⇒ <code>Promise</code>
         * [.grantSupportAccess(uuidOrIdOrArray, expiryTimestamp)](#balena.models.device.grantSupportAccess) ⇒ <code>Promise</code>
         * [.revokeSupportAccess(uuidOrIdOrArray)](#balena.models.device.revokeSupportAccess) ⇒ <code>Promise</code>
-        * [.lastOnline(device)](#balena.models.device.lastOnline) ⇒ <code>String</code>
+        * ~~[.lastOnline(device)](#balena.models.device.lastOnline) ⇒ <code>String</code>~~
         * [.getOsVersion(device)](#balena.models.device.getOsVersion) ⇒ <code>String</code>
         * [.isTrackingApplicationRelease(uuidOrId)](#balena.models.device.isTrackingApplicationRelease) ⇒ <code>Promise</code>
         * [.getTargetReleaseHash(uuidOrId)](#balena.models.device.getTargetReleaseHash) ⇒ <code>Promise</code>
@@ -2264,7 +2264,7 @@ balena.models.application.revokeSupportAccess(123);
     * [.getProgress(uuidOrId)](#balena.models.device.getProgress) ⇒ <code>Promise</code>
     * [.grantSupportAccess(uuidOrIdOrArray, expiryTimestamp)](#balena.models.device.grantSupportAccess) ⇒ <code>Promise</code>
     * [.revokeSupportAccess(uuidOrIdOrArray)](#balena.models.device.revokeSupportAccess) ⇒ <code>Promise</code>
-    * [.lastOnline(device)](#balena.models.device.lastOnline) ⇒ <code>String</code>
+    * ~~[.lastOnline(device)](#balena.models.device.lastOnline) ⇒ <code>String</code>~~
     * [.getOsVersion(device)](#balena.models.device.getOsVersion) ⇒ <code>String</code>
     * [.isTrackingApplicationRelease(uuidOrId)](#balena.models.device.isTrackingApplicationRelease) ⇒ <code>Promise</code>
     * [.getTargetReleaseHash(uuidOrId)](#balena.models.device.getTargetReleaseHash) ⇒ <code>Promise</code>
@@ -3867,7 +3867,9 @@ balena.models.device.revokeSupportAccess(123);
 ```
 <a name="balena.models.device.lastOnline"></a>
 
-##### device.lastOnline(device) ⇒ <code>String</code>
+##### ~~device.lastOnline(device) ⇒ <code>String</code>~~
+***Will be dropped in the next major***
+
 If the device has never been online this method returns the string `Connecting...`.
 
 **Kind**: static method of [<code>device</code>](#balena.models.device)  
@@ -5572,6 +5574,7 @@ that is _not_ pre-release, can be `null`
 | currentVersion | <code>String</code> |  | semver-compatible version for the starting OS version |
 | [options] | <code>Object</code> |  | Extra options to filter the OS releases by |
 | [options.includeDraft] | <code>Boolean</code> | <code>false</code> | Whether pre-releases should be included in the results |
+| [options.osType] | <code>Boolean</code> \| <code>Null</code> | <code>&#x27;default&#x27;</code> | Can be one of 'default', 'esr' or null to include all types |
 
 **Example**  
 ```js
