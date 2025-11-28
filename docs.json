@@ -40,36 +40,24 @@
             ]
           },
           {
-            "group": "ACCOUNTS",
-            "icon": "users",
-            "pages": [
-              "learn/accounts/account",
-              "learn/accounts/organizations",
-              "learn/accounts/fleet-members",
-              "learn/accounts/billing",
-              "learn/accounts/fleet-types",
-              "learn/accounts/enterprise-sso",
-              "learn/accounts/idp-setup/microsoft-entra-saml-setup",
-              "learn/accounts/idp-setup/google-workspace-saml-setup",
-              "learn/accounts/support-access"
-            ]
-          },
-          {
             "group": "GETTING STARTED",
             "icon": "rocket-launch",
-            "pages": ["learn/getting-started/raspberrypi5/nodejs"]
+            "pages": [
+              "learn/getting-started/index",
+              "learn/getting-started/raspberrypi5/nodejs"
+            ]
           },
           {
             "group": "DEVELOP",
             "icon": "microchip",
             "pages": [
-              "learn/develop/blocks",
-              "learn/develop/apps",
-              "learn/develop/multicontainer",
-              "learn/develop/hardware/index",
+              "learn/develop/local-mode",
               "learn/develop/dockerfile",
+              "learn/develop/multicontainer",
+              "learn/develop/apps",
+              "learn/develop/blocks",
               "learn/develop/runtime",
-              "learn/develop/local-mode"
+              "learn/develop/hardware/index"
             ]
           },
           {
@@ -77,25 +65,53 @@
             "icon": "code-merge",
             "pages": [
               "learn/deploy/deployment",
-              "learn/deploy/deploy-with-balena-button",
+              "learn/deploy/release-strategy/release-policy",
+              "learn/deploy/release-strategy/update-locking",
+              "learn/deploy/release-strategy/update-strategies",
               "learn/deploy/delta",
               "learn/deploy/build-optimization",
-              "learn/deploy/release-strategy/release-policy",
-              "learn/deploy/release-strategy/update-strategies",
-              "learn/deploy/release-strategy/update-locking"
+              "learn/deploy/deploy-with-balena-button"
             ]
           },
           {
             "group": "MANAGE",
             "icon": "sliders",
             "pages": [
+              "learn/manage/device-statuses",
+              "learn/manage/device-logs",
               "learn/manage/actions",
               "learn/manage/configuration",
-              "learn/manage/device-logs",
-              "learn/manage/device-statuses",
+              "learn/manage/variables",
               "learn/manage/filters-tags",
-              "learn/manage/ssh-access",
-              "learn/manage/variables"
+              "learn/manage/ssh-access"
+            ]
+          },
+          {
+            "group": "ACCOUNTS & BILLING",
+            "icon": "users",
+            "pages": [
+              "learn/accounts/account",
+              "learn/accounts/enterprise-sso",
+              "learn/accounts/idp-setup/microsoft-entra-saml-setup",
+              "learn/accounts/idp-setup/google-workspace-saml-setup",
+              "learn/accounts/billing",
+              "learn/accounts/fleet-members",
+              "learn/accounts/fleet-types",
+              "learn/accounts/organizations",
+              "learn/accounts/support-access"
+            ]
+          },
+          {
+            "group": "MASTERCLASSES",
+            "icon": "graduation-cap",
+            "pages": [
+              "learn/masterclasses/cli-masterclass",
+              "learn/masterclasses/advanced-cli",
+              "learn/masterclasses/host-os-masterclass",
+              "learn/masterclasses/services-masterclass",
+              "learn/masterclasses/fleet-management",
+              "learn/masterclasses/device-debugging",
+              "learn/masterclasses/docker-masterclass"
             ]
           }
         ]
@@ -133,10 +149,46 @@
         "groups": [
           {
             "group": "Supported devices",
-            "icon": "star",
+            "icon": "microchip",
             "pages": [
               "reference/hardware/versioning",
+              "reference/hardware/devices",
               "reference/hardware/wifi-dongles"
+            ]
+          },
+          {
+            "group": "Host OS",
+            "icon": "server",
+            "pages": [
+              "reference/OS/overview",
+              "reference/OS/updates/self-service",
+              "reference/OS/updates/update-process",
+              "reference/OS/updates/rollbacks",
+              "reference/OS/network",
+              "reference/OS/configuration",
+              "reference/OS/time",
+              "reference/OS/advanced",
+              "reference/OS/customer-board-support"
+            ]
+          },
+          {
+            "group": "Device supervisor",
+            "icon": "circle-user",
+            "pages": [
+              "reference/supervisor/supervisor-api",
+              "reference/supervisor/device-metrics",
+              "reference/supervisor/bandwidth-reduction",
+              "reference/supervisor/docker-compose",
+              "reference/supervisor/supervisor-upgrades",
+              "reference/supervisor/configuration-list"
+            ]
+          },
+          {
+            "group": "Base images",
+            "icon": "cube",
+            "pages": [
+              "reference/base-images/overview",
+              "reference/base-images/base-images-ref"
             ]
           },
           {
@@ -147,30 +199,10 @@
             ]
           },
           {
-            "group": "Host OS",
-            "icon": "wifi",
+            "group": "CLI",
+            "icon": "terminal",
             "pages": [
-              "reference/OS/updates/self-service",
-              "reference/OS/customer-board-support"
-            ]
-          },
-          {
-            "group": "Base images",
-            "icon": "cube",
-            "pages": [
-              "reference/base-images/overview"
-            ]
-          },
-          {
-            "group": "Device supervisor",
-            "icon": "circle-user",
-            "pages": ["reference/supervisor/device-metrics"]
-          },
-          {
-            "group": "Diagnostics",
-            "icon": "activity",
-            "pages": [
-              "reference/diagnostics/index"
+              "reference/balena-cli/index"
             ]
           },
           {
@@ -183,10 +215,10 @@
             ]
           },
           {
-            "group": "Command line",
-            "icon": "terminal",
+            "group": "Diagnostics",
+            "icon": "stethoscope",
             "pages": [
-              "reference/balena-cli/index"
+              "reference/diagnostics/index"
             ]
           }
         ]
