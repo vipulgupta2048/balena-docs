@@ -4,8 +4,8 @@ Name|Description
 [balena-plant-saver](https://github.com/balena-io-examples/balena-plant-saver)|We're building a plant monitor (and saver) - this is the early stage
 [multicontainer-getting-started](https://github.com/balena-io-examples/multicontainer-getting-started)|Get up and running quickly with a multicontainer setup on balena
 [internetspeedtest](https://github.com/balena-io-examples/internetspeedtest)|Log your internet download, upload and ping metrics ti influxDB, and Grafana it. Grafana all the things!
-[x11-window-manager](https://github.com/balena-io-examples/x11-window-manager)|Example project showing how to run a desktop manager with balenaCloud in order to run GUI applications.
 [balena-python-hello-world](https://github.com/balena-io-examples/balena-python-hello-world)|Example of how to deploy Python code on a balena supported device.
+[x11-window-manager](https://github.com/balena-io-examples/x11-window-manager)|Example project showing how to run a desktop manager with balenaCloud in order to run GUI applications.
 [staged-releases](https://github.com/balena-io-examples/staged-releases)|demonstration scripts on how to use the resin.io API to do staged releases to a fleet of devices.
 [coral-streaming-object-detector](https://github.com/balena-io-examples/coral-streaming-object-detector)|This example will help you deploy a streaming camera feed with realtime people detection using the Coral Edge TPU for on-device ML inferencing.
 [balena-aws-lambda](https://github.com/balena-io-examples/balena-aws-lambda)|Associate balena devices with AWS IoT when they ping a lambda endpoint
@@ -39,8 +39,8 @@ Name|Description
 [example-build-secrets-and-variables](https://github.com/balena-io-examples/example-build-secrets-and-variables)|Example of build time secrets and variables on balenaCloud
 [wifi-connect-custom-ui-example](https://github.com/balena-io-examples/wifi-connect-custom-ui-example)|An example on how to customize the captive portal of WiFi Connect
 [balena-netdata](https://github.com/balena-io-examples/balena-netdata)|Netdata configuration for internal on-device monitoring
-[hostapd-enterprise](https://github.com/balena-io-examples/hostapd-enterprise)|Resin multicontainer hostapd-powered access point with WPA-EAP (Enterprise) authentication
 [balena-ros2-foxy-base](https://github.com/balena-io-examples/balena-ros2-foxy-base)|A basic installation of ROS2 Foxy in a container, ready to deploy on balena devices.
+[hostapd-enterprise](https://github.com/balena-io-examples/hostapd-enterprise)|Resin multicontainer hostapd-powered access point with WPA-EAP (Enterprise) authentication
 [nvidia-x86](https://github.com/balena-io-examples/nvidia-x86)|Example of using CUDA on an Nvidia GPU in an x86 device.
 [balena-updates-lock](https://github.com/balena-io-examples/balena-updates-lock)|Example project of simple updates locking
 [balena-idling](https://github.com/balena-io-examples/balena-idling)|Likely the most minimalist project to deploy on a balena device
@@ -50,6 +50,9 @@ Name|Description
 [balena-nginx-hello-world](https://github.com/balena-io-examples/balena-nginx-hello-world)|Simple nginx example on balena
 [ROS-AutonomousVehicle](https://github.com/balena-io-examples/ROS-AutonomousVehicle)|Sample project to show ROS autonomous vehicle running in a balena container.
 [balena-avahi](https://github.com/balena-io-examples/balena-avahi)|mDNS/.local resolution with Avahi within a container
+[system-metrics](https://github.com/balena-io-examples/system-metrics)|Collect metrics on device performance and forward to MQTT
+[network-metrics-logger](https://github.com/balena-io-examples/network-metrics-logger)|Log metrics on network I/O
+[setup-balena-action](https://github.com/balena-io-examples/setup-balena-action)|Install the balena CLI in your GitHub Actions workflow
 [balena-haskell-hello-world](https://github.com/balena-io-examples/balena-haskell-hello-world)|Example of how to deploy haskell code on a balena supported device.
 [hostapd-minimal](https://github.com/balena-io-examples/hostapd-minimal)|Minimal hostapd access point example for resin.io
 [meta-exporter](https://github.com/balena-io-examples/meta-exporter)|The People's Exporter
@@ -57,11 +60,8 @@ Name|Description
 [tx2-container-contracts-sample](https://github.com/balena-io-examples/tx2-container-contracts-sample)|Sample TX2 application with optional containers tied to device L4T version
 [remote-local-logging](https://github.com/balena-io-examples/remote-local-logging)|Receiver of logs
 [balena-ros2-foxy-desktop](https://github.com/balena-io-examples/balena-ros2-foxy-desktop)|An installation of ROS2 Foxy in a container, with a full desktop environment, ready to deploy on balena devices.
-[system-metrics](https://github.com/balena-io-examples/system-metrics)|Collect metrics on device performance and forward to MQTT
-[network-metrics-logger](https://github.com/balena-io-examples/network-metrics-logger)|Log metrics on network I/O
 [balena-cloudflare-tunnel](https://github.com/balena-io-examples/balena-cloudflare-tunnel)|A simple balenaBlock to route your application through Cloudflare Tunnel
 [balena-zerotier-gateway](https://github.com/balena-io-examples/balena-zerotier-gateway)|Fully working ZeroTier container with IP forwarding an masquerading to the LAN.
-[setup-balena-action](https://github.com/balena-io-examples/setup-balena-action)|Install the balena CLI in your GitHub Actions workflow
 [tx2-sample-app](https://github.com/balena-io-examples/tx2-sample-app)|Jetson TX2 Sample Application
 [sample-gcr-registry-secrets](https://github.com/balena-io-examples/sample-gcr-registry-secrets)|Sample balena push/deploy with Google Container Registry (GCR) private images
 [balena-c-hello-world](https://github.com/balena-io-examples/balena-c-hello-world)|Getting started with C on balena

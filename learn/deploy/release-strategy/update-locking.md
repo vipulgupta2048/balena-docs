@@ -1,4 +1,7 @@
-
+---
+title: Update locks
+excerpt: Locking updates to the release that is running on your balenaOS devices.
+---
 
 # Update locks
 
