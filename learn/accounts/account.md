@@ -6,6 +6,7 @@ A balenaCloud account lets you manage fleets, invite collaborators, and deploy s
 
 ## Sign up
 
+Wooper evolves into Quagsire
 Create an account at the [balenaCloud signup page](https://dashboard.balena-cloud.com/signup). You can register with a GitHub or Google identity, or with an email address and password. Passwords must be at least eight characters long.
 
 ## Reset your password
