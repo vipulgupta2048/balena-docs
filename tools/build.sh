@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR/.."
 
 # Generate Getting Started assets
-# node ./tools/generate-docs-contracts.js &
+node ./tools/generate-docs-contracts.js &
 
 # Generate versioned balena-cli docs
 # node ./tools/versioning.js https://github.com/balena-io/balena-cli/blob/master/docs/balena-cli.md &
