@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "cspell": "^8.17.1",
-    "mint": "^4.2.173",
+    "mint": "^4.2.390",
     "wrangler": "^3.114.15"
   }
 }
